@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <h:head>
+        <title>Facelet Title</title>
+        <style type="text/css">
+            #contenedorTablas{
+                margin-top: 6px;     
+                width: 100%;
+            }
+        </style>
+    </h:head>
+    <h:body>
+        <p:growl id="mensaje2" autoUpdate="true" showSummary="false"  showDetail="true"/>           
+        <h:form id="selecVehiculos" >
+            <p:panel style="text-align: center; height: 600px; " header="Deshabilitar Zona." >
+                <p:panel style="text-align: center; background-color: #D5F7FF;">
+                    Para eliminar una zona tendrá que pasar los "Vehículos" de la zona que va a afectar a otra u otras zonas del sistema.
+                    A continuación se muestran los vehículos de la zona que afectará en la tabla izquierda, en donde debe seleccionar los vehiculos que el sistema
+                    le permita pasar a las zonas disponibles que se muestran en la tabla de la derecha.                    
+<!--                    <p:inputText placeholder="ID ZONA SELECCIONADA." value="#//{principalManagedBean.idZona}"/>-->
+                </p:panel>
+                <div id="contenedorTablas">                    
+                    <p:dataTable id="checkVehiculos" var="vehiculo" value="#{vehiculosManaged.vehiculos}"
+                                 selection="#{vehiculosManaged.vehiculosSeleccionados}" 
+                                 rowKey="#{vehiculo.idVehiculo}" style="margin-bottom:0; width: 44%; float: left;" 
+                                 widgetVar="tablaVehiculo" filteredValue="#{vehiculosManaged.vehiculosFiltrados}" 
+                                 emptyMessage="No hay registros" 
+
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 paginator="true"
+                                 rows="10"                                                                        
+                                 >
+                        <f:facet name="header">
+                            Vehiculos de la zona afectada.
+                            <p:selectOneMenu value="#{vehiculosManaged.idZona2}" id="zonal" style="width:180px; text-align: left; float: right; margin-top: 5px; margin-left: 5px;" >                
+                                <f:selectItems var="z" itemLabel="#{z.nombre}" itemValue="#{z.idZona}" 
+                                               value="#{zonaManaged.listaZonas}" />                            
+                                <p:ajax listener="#{vehiculosManaged.listarPor2()}" update=":selecVehiculos"  />
+                                <p:ajax update=":selecVehiculos" />
+                            </p:selectOneMenu>  
+                            <p:commandButton value=">>" action="#{vehiculosManaged.pasarVehiculos()}" title="Pasar vihiculos" style="margin-left: 20px; background-color: #D5F7FF;" update=":selecVehiculos" />                                       
+                        </f:facet> 
+
+                        <p:columnGroup type="header">
+                            <p:row>
+                                <p:column colspan="2" headerText="Vehiculo" />
+                                <p:column colspan="2" headerText="Propietario" />
+                            </p:row>
+                            <p:row>
+                                <p:column selectionMode="multiple"/>
+                                <p:column headerText="Placa" />
+                                <p:column headerText="Cedula" />
+                                <p:column headerText="Nombre" />
+                            </p:row>
+                        </p:columnGroup>             
+                        <p:column selectionMode="multiple" style="width:16px;text-align:center"/>                                                                  
+
+                        <p:column headerText="Placa">
+                            <h:outputText value="#{vehiculo.placa}" />
+                        </p:column>                                                                            
+
+                        <p:column>
+                            <h:outputText value="#{vehiculo.idAsociado.cedula}" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{vehiculo.idAsociado.nombre} #{vehiculo.idAsociado.apellido}" />                    
+                        </p:column>
+                    </p:dataTable>
+
+
+                    <!-- SEGUNDA TABLA -->
+                    <p:dataTable id="vzDestino2" var="vzDestino" value="#{vehiculosManaged.vehiculosZonaDestino}"                         
+                                 style="margin-bottom:0; width: 44%; float: left; margin-left: 3%;"                        
+                                 emptyMessage="No hay registros" 
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 paginator="true"
+                                 rows="10"                         
+                                 selectionMode="single"
+                                 rowKey="#{vzDestino.idVehiculo}"
+                                 >
+                        <f:facet name="header">
+                            Vehiculos e información de la zona destino.    
+                            <p:selectOneMenu value="#{vehiculosManaged.idZona}" id="zonal" style="width:180px; text-align: left; float: right; margin-top: 5px; margin-left: 5px;" >                
+                                <f:selectItems var="z" itemLabel="#{z.nombre}" itemValue="#{z.idZona}" 
+                                               value="#{zonaManaged.listaZonas}" />                            
+                                <p:ajax listener="#{vehiculosManaged.listarPor}" update=":selecVehiculos"  />
+                                <p:ajax update=":selecVehiculos" />
+                            </p:selectOneMenu>  
+                        </f:facet>
+
+
+
+                        <p:columnGroup type="header">
+                            <p:row>
+                                <p:column headerText="Vehiculo" />
+                                <p:column colspan="2" headerText="Propietario" />
+                            </p:row>
+                            <p:row>
+                                <p:column headerText="Placa" />
+                                <p:column headerText="Cedula" />
+                                <p:column headerText="Nombre" />
+                            </p:row>
+
+                        </p:columnGroup>                             
+                        <p:column headerText="Placa">
+                            <h:outputText value="#{vzDestino.placa}" />
+                        </p:column>                                                                            
+
+                        <p:column>
+                            <h:outputText value="#{vzDestino.idAsociado.cedula}" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{vzDestino.idAsociado.nombre} #{vzDestino.idAsociado.apellido}" />                    
+                        </p:column>
+
+                        <f:facet name="footer">
+                            <p:outputLabel value="Capacidad: #{vehiculosManaged.capacidadZona} | " />
+                            <p:outputLabel value="Vehiculos: #{vehiculosManaged.numeroRegistrosDestino} | " />
+                            <p:outputLabel value="Disponible: #{vehiculosManaged.espacioDisponible}" />
+                        </f:facet>
+                    </p:dataTable>                    
+                </div>
+                <p:commandButton value="Dehabilitar Zona" actionListener="#{vehiculosManaged.desabilitarZona()}" style="float: left; margin-top: 40px;" oncomplete="cargarPagina('zona.xhtml')"/>
+            </p:panel>            
+        </h:form>
+    </h:body>
+</html>
+

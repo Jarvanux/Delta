@@ -1,0 +1,537 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Asociado</title>
+    </h:head>
+    <h:body>
+        <h:form id="form">
+
+            <p:growl id="mensaje" showDetail="false" showSummary="true" autoUpdate="true"   />
+            <p:dataTable id="tablaAsociado" var="vehiculo" value="#{asociadoManaged1.listaVehiculos}"
+                         filteredValue="#{asociadoManaged1.filtroVehiculos}" widgetVar="asociadoTable"
+                         emptyMessage="No hay registros"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         paginator="true"
+                         rows="10"
+                         rowsPerPageTemplate="10,25,50,100">
+                <f:facet name="header">
+                    <p:outputPanel >
+                        <p:selectOneRadio id="listaPor" columns="4" value="#{asociadoManaged1.listaPor}" style=" width: 300px; float: left;" >
+                            <f:selectItem itemLabel="Activos" itemValue="Activos" />
+                            <f:selectItem itemLabel="Deshabilitados" itemValue="Dehabilitados"/>                              
+                            <p:ajax listener="#{asociadoManaged1.listarPorPreferencia()}" onstart="PF('asociadoTable').filter()"  update=":form"/>
+                        </p:selectOneRadio>
+                        <p:commandButton value="Agregar" style="margin-right: 30%;">
+                            <p:ajax oncomplete="PF('dialogAddAsociado1').show()" />
+                        </p:commandButton>                        
+                        <p:inputText id="globalFilter" onkeyup="PF('asociadoTable').filter()" style="width:150px; float: right; margin-right: 30px;" placeholder="Buscar..." />
+                    </p:outputPanel>
+                </f:facet>
+
+                <p:column headerText="Asociado" filterBy="#{vehiculo.idAsociado.nombre} #{vehiculo.idAsociado.apellido}" filterStyle="display:none"  filterMatchMode="contains">
+                    <h:outputText value="#{vehiculo.idAsociado.nombre} #{vehiculo.idAsociado.apellido}" />
+                </p:column>
+
+                <p:column headerText="Cédula" filterBy="#{vehiculo.idAsociado.cedula}" filterStyle="display:none"  filterMatchMode="contains">
+                    <h:outputText value="#{vehiculo.idAsociado.cedula}" />
+                </p:column>
+
+                <p:column headerText="Conductor" filterBy="#{vehiculo.nic.nombre} #{vehiculo.nic.apellido}" filterStyle="display:none"  filterMatchMode="contains">
+                    <h:outputText value="#{vehiculo.nic.nombre} #{vehiculo.nic.apellido}" />
+                </p:column>
+
+                <p:column headerText="Cédula" filterBy="#{vehiculo.nic.cedula}" filterStyle="display:none"  filterMatchMode="contains">
+                    <h:outputText value="#{vehiculo.nic.cedula}" />
+                </p:column>
+
+                <p:column headerText="Placa"  filterBy="#{vehiculo.placa}" filterStyle="display:none"  filterMatchMode="contains">
+                    <h:outputText value="#{vehiculo.placa}" />
+                </p:column>
+
+                <p:column headerText="Tipo" filterBy="#{vehiculo.tipoVehiculo}" filterStyle="display:none"  filterMatchMode="contains" >
+                    <h:outputText value="#{vehiculo.tipoVehiculo}" />
+                </p:column>
+
+                <p:column headerText="Opciones" style="text-align: center; width: 140px;">
+                    <p:commandButton id="btnDetalles" update=":form:asociadoDetalle" oncomplete="PF('dialogAsociado').show()" icon="ui-icon-search" title="Ver" style=" width: 25px; height: 25px; float: left;">
+                        <f:setPropertyActionListener value="#{vehiculo}" target="#{asociadoManaged1.vehiculoSeleccionado}" />
+                    </p:commandButton>
+                    <p:commandButton id="btnEditar"  oncomplete="PF('dialogEditAsociado').show()" icon="ui-icon-pencil" title="Actualizar" style=" width: 25px; height: 25px; float: left;">
+                        <p:ajax listener="#{asociadoManaged1.preapararDatosEditar(vehiculo)}"  update=":form:editarAsociado"/>
+                    </p:commandButton>
+                    <p:commandButton id="btnDeshabilitar"  oncomplete="PF('dialogRemoveAsociado').show()" icon="ui-icon-closethick" title="Deshabilitar" style=" width: 25px; height: 25px; float: left;">
+                        <p:ajax listener="#{asociadoManaged1.prepareDatos(vehiculo)}" update=":form:deshabilitarAsociado"/>
+                    </p:commandButton>
+                    <p:commandButton id="btnHabilitar"  oncomplete="PF('dialogHabAsociado').show()" icon="ui-icon-circle-check" title="Deshabilitar" style=" width: 25px; height: 25px; float: left;">
+                        <p:ajax listener="#{asociadoManaged1.prepareDatos(vehiculo)}" update=":form:habilitarAsociado"/>
+                    </p:commandButton>
+                </p:column>
+                <f:facet name="footer" >
+                    <p:commandButton value="ver Conductores" onclick="cargarPagina('conductor.xhtml')" />
+                </f:facet>
+            </p:dataTable>
+
+            <!-- Deshabilitar -->
+            <p:dialog widgetVar="dialogRemoveAsociado" modal="false" resizable="false" header="Registrar Asociado" showEffect="fade">
+                <p:outputPanel id="deshabilitarAsociado" style="text-align: center;">
+                    <h:outputText value="¿Está seguro que desea deshabilitar el Asociado" />
+                    <h:panelGrid columns="2" style="width: 100%; margin-top: 5%;" >
+                        <p:commandButton  value="Aceptar"  action="#{asociadoManaged1.deshabilitar()}" oncomplete="PF('dialogRemoveAsociado').hide()" update="tablaAsociado" />
+                        <p:commandButton value="Cancelar"  onclick="PF('dialogRemoveAsociado').hide()" />
+                    </h:panelGrid>
+                </p:outputPanel>
+            </p:dialog>
+            <!-- Deshabilitar -->
+
+            <!-- Habilitar -->
+            <p:dialog widgetVar="dialogHabAsociado" modal="false" resizable="false" header="Registrar Asociado" showEffect="fade">
+                <p:outputPanel id="habilitarAsociado" style="text-align: center;">
+                    <h:outputText value="¿Está seguro que desea habilitar el Asociado" />
+                    <h:panelGrid columns="2" style="width: 100%; margin-top: 5%;"  >
+                        <p:commandButton  value="Aceptar"  action="#{asociadoManaged1.habilitar()}" oncomplete="PF('dialogHabAsociado').hide()" update="tablaAsociado"/>
+                        <p:commandButton value="Cancelar"  onclick="PF('dialogHabAsociado').hide()" />
+                    </h:panelGrid>
+                </p:outputPanel>
+            </p:dialog>
+            <!-- Habilitar -->
+
+            <!-- Crear nuevo 1 -->
+            <p:dialog widgetVar="dialogAddAsociado1" modal="false" resizable="false" header="Registrar Asociado" showEffect="fade">
+                <p:outputPanel id="agregarAsociado1" style="text-align: center;">
+                    <p:tabView id="tabView">
+                        <p:tab title="Asociado">
+                            <p:panelGrid columns="2" style="width: 100%; height: 100%;">
+                                <h:outputLabel value="Nombre" for="nombreAsociado" />
+                                <p:inputText id="nombreAsociado" value="#{asociadoManaged1.nombreAsociado}"/>
+
+                                <h:outputLabel value="Apellido" for="apellidoAsociado" />
+                                <p:inputText id="apellidoAsociado" value="#{asociadoManaged1.apellidoAsociado}"/>
+
+                                <h:outputLabel value="Fecha de Nacimiento" for="fechaNacimientoAsociado" />
+                                <p:calendar id="fechaNacimientoAsociado" value="#{asociadoManaged1.fechaNacimientoAsociado}" locale="de" navigator="true"
+                                            yearRange="1900:#{asociadoManaged1.fechaNacimientoAsociado}" pattern="dd-MM-yyyy"/>
+
+                                <h:outputLabel value="Cédula" for="cedulaAsociado" />
+                                <p:inputText id="cedulaAsociado" value="#{asociadoManaged1.cedulaAsociado}"/>
+
+                                <h:outputLabel value="Expedida" for="expedidaCedulaAsociado" />
+                                <p:selectOneMenu id="expedidaCedulaAsociado" value="#{asociadoManaged1.expedidaCedulaAsociado}">
+                                    <f:selectItem itemLabel="Bogotá" itemValue="Bogotá"> </f:selectItem>
+                                    <f:selectItem itemLabel="Medellín" itemValue="Medellín"> </f:selectItem>
+                                    <f:selectItem itemLabel="Santander" itemValue="Santander"> </f:selectItem>
+                                    <f:selectItem itemLabel="Bucaramanga" itemValue="Bucaramanga"> </f:selectItem>
+                                </p:selectOneMenu>
+
+                                <h:outputLabel value="Fecha de Afiliación" for="fechaAfiliacion" />
+                                <p:calendar id="fechaAfiliacion" value="#{asociadoManaged1.fechaAfiliacion}" pattern="yyyy-MM-dd"/>
+
+                                <h:outputLabel value="Celular" for="celularAsociado" />
+                                <p:inputText id="celularAsociado" value="#{asociadoManaged1.celularAsociado}"/>
+
+                                <h:outputLabel value="Correo electrónico" for="correoAsociado" />
+                                <p:inputText id="correoAsociado" value="#{asociadoManaged1.correoAsociado}"/> 
+
+                                <h:outputLabel value="Antiguedad en Corabastos" for="antiguedadCorabastos" />
+                                <p:inputText id="antiguedadCorabastos" value="#{asociadoManaged1.antiguedadEnCorabastos}"/>
+                            </p:panelGrid>
+                        </p:tab>
+                        <p:tab title="Asignar conductor" >
+                            <p:panel id="agregarConductor" >
+                                <h:outputText value="Propietario" />
+                                <p:selectBooleanCheckbox id="propietario" value="#{asociadoManaged1.propietario}" >
+                                    <p:ajax update="formConductor" listener="#{asociadoManaged1.propietario()}"/>
+                                </p:selectBooleanCheckbox>
+                                <p:panelGrid columns="4" id="formConductor" style="width: 100%; height: 100%;" >
+
+                                    <h:outputLabel for="nit" value="NIC" />
+                                    <p:inputText id="nit" value="#{asociadoManaged1.nit}" />
+
+                                    <h:outputLabel for="nombreConductor" value="Nombre" />
+                                    <p:inputText id="nombreConductor" value="#{asociadoManaged1.nombreConductor}" />
+
+                                    <h:outputLabel for="apellidoConductor" value="Apellido" />
+                                    <p:inputText id="apellidoConductor" value="#{asociadoManaged1.apellidoConductor}" />
+
+                                    <h:outputLabel for="fechaNacimientoConductor" value="Fecha de Nacimiento" />
+                                    <p:calendar id="fechaNacimientoConductor" value="#{asociadoManaged1.fechaNacimientoConductor}" locale="de" navigator="true" pattern="yyyy-MMM-dd"
+                                                yearRange="1900:"/>
+                                    <h:outputLabel for="cedulaConductor" value="Cédula" />
+                                    <p:inputText id="cedulaConductor" value="#{asociadoManaged1.cedulaConductor}" />
+
+                                    <h:outputLabel for="expedidaCedulaConductor" value="Expedida" />
+                                    <p:selectOneMenu id="expedidaCedulaConductor" value="#{asociadoManaged1.expedidaCedulaConductor}">
+                                        <f:selectItem itemLabel="Bogotá" itemValue="Bogotá"> </f:selectItem>
+                                        <f:selectItem itemLabel="Medellín" itemValue="Medellín"> </f:selectItem>
+                                        <f:selectItem itemLabel="Santander" itemValue="Santander"> </f:selectItem>
+                                        <f:selectItem itemLabel="Bucaramanga" itemValue="Bucaramanga"> </f:selectItem>
+                                    </p:selectOneMenu>
+
+                                    <h:outputLabel for="correoConductor" value="Correo eletrónico" />
+                                    <p:inputText id="correoConductor" value="#{asociadoManaged1.correoConductor}" />
+
+                                    <h:outputLabel for="celularConductor" value="Celular" />
+                                    <p:inputText id="celularConductor" value="#{asociadoManaged1.celularConductor}" />
+
+                                    <h:outputLabel for="nivelEscolaridad" value="Nivel de Escolaridad" />
+                                    <p:inputText id="nivelEscolaridad" value="#{asociadoManaged1.nivelEscolaridad}" />
+
+                                    <h:outputLabel for="direccion" value="Dirección" />
+                                    <p:inputText id="direccion" value="#{asociadoManaged1.direccion}" />
+
+
+                                    <h:outputLabel for="telefono" value="Teléfono" />
+                                    <p:inputText id="telefono" value="#{asociadoManaged1.telefono}" />
+
+                                    <h:outputLabel for="barrio" value="Barrio" />
+                                    <p:inputText id="barrio" value="#{asociadoManaged1.barrio}" />
+
+                                    <h:outputLabel for="arp" value="ARP" />
+                                    <p:inputText id="arp" value="#{asociadoManaged1.arp}" />
+
+                                    <h:outputLabel for="eps" value="EPS" />
+                                    <p:inputText id="eps" value="#{asociadoManaged1.eps}" />
+
+                                    <h:outputLabel for="genero" value="Genero" />
+                                    <p:selectOneMenu id="genero" value="#{asociadoManaged1.genero}">
+                                        <f:selectItem itemLabel="Masculino" itemValue="Masculino" />
+                                        <f:selectItem itemLabel="Femenino" itemValue="Femenino" />
+                                    </p:selectOneMenu>
+
+                                    <h:outputLabel for="estadoCivil" value="Estado Civil" />
+                                    <p:selectOneMenu id="estadoCivil" value="#{asociadoManaged1.estadoCivil}">
+                                        <f:selectItem itemLabel="Soltero/a" itemValue="Soltero/a" />
+                                        <f:selectItem itemLabel="Casado/a" itemValue="Casado/a" />
+                                        <f:selectItem itemLabel="Separado/a" itemValue="Separado/a" />
+                                        <f:selectItem itemLabel="Viudo/a" itemValue="Viudo/a" />
+                                        <f:selectItem itemLabel="Unión Libre" itemValue="Unión libre" />
+                                    </p:selectOneMenu>
+
+                                    <h:outputLabel for="numHijos" value="Númer de Hijos" />
+                                    <p:inputText id="numHijos" value="#{asociadoManaged1.numHijos}" />
+
+                                    <h:outputLabel for="grupoSangineo" value="Grupo sangíneo" />
+                                    <p:inputText id="grupoSangineo" value="#{asociadoManaged1.grupoSangineo}" />
+                                </p:panelGrid>
+                            </p:panel>
+                        </p:tab>
+
+                        <p:tab title="Vehículo">
+                            <p:panelGrid columns="4" style="width: 100%;">
+                                <h:outputLabel for="zona" value="Zona" />
+                                <p:selectOneMenu value="#{asociadoManaged1.idZona}" id="zona">
+                                    <f:selectItem itemLabel="Seleccione" itemValue="-1" itemDisabled="true"/>
+                                    <f:selectItems var="zona" value="#{zonaManaged.listaZonas}" 
+                                                   itemLabel="#{zona.nombre}"
+                                                   itemValue="#{zona.idZona}" /> 
+                                </p:selectOneMenu>
+
+                                <h:outputLabel for="placa" value="Placa" />
+                                <p:inputText id="placa" value="#{asociadoManaged1.placa}" />
+
+                                <h:outputLabel for="numMotor" value="Número de motor" />
+                                <p:inputText id="numMotor" value="#{asociadoManaged1.numMotor}" />
+
+                                <h:outputLabel for="marca" value="Marca" />
+                                <p:inputText id="marca" value="#{asociadoManaged1.marca}" />
+
+                                <h:outputLabel for="modelo" value="Modelo" />
+                                <p:inputText id="modelo" value="#{asociadoManaged1.modelo}" />
+
+                                <h:outputLabel for="numChasis" value="Número de Chasis" />
+                                <p:inputText id="numChasis" value="#{asociadoManaged1.numChasis}" />
+
+                                <h:outputLabel for="servicio" value="Tipo de Servicio" />
+                                <p:selectOneMenu id="servicio" value="#{asociadoManaged1.tipoServicio}">
+                                    <f:selectItem itemLabel="Público" itemValue="Público" />
+                                    <f:selectItem itemLabel="Privado" itemValue="Privado" />
+                                </p:selectOneMenu>
+
+                                <h:outputLabel for="tipoVehiculo" value="Tipo de Vehículo" />
+                                <p:inputText id="tipoVehiculo" value="#{asociadoManaged1.tipoVehiculo}" />
+                            </p:panelGrid>
+                            <h3> Soat </h3>
+                            <p:panelGrid columns="2" columnClasses="label,input" style="width: 100%">
+                                <h:outputLabel for="aseguradora" value="Aseguradora" />
+                                <p:inputText id="aseguradora" value="#{asociadoManaged1.aseguradora}" />
+
+                                <h:outputLabel for="fechaInicioSoat" value="Fecha de inicio" />
+                                <p:calendar id="fechaInicioSoat" value="#{asociadoManaged1.fechaInicioSoat}"/>                        
+                            </p:panelGrid>
+
+                            <h3> Tecnomecánica </h3>
+                            <p:panelGrid columns="2" columnClasses="label,input" style="width: 100%">
+                                <h:outputLabel for="fechaInicioTecno" value="Fecha de inicio" />
+                                <p:calendar id="fechaInicioTecno" value="#{asociadoManaged1.fechaInicioTecno}"/>
+                            </p:panelGrid>
+                            <p:commandButton value="Guardar" action="#{asociadoManaged1.guardar()}" update=":form:tablaAsociado" />
+                        </p:tab>
+                        <p:ajax event="tabChange" listener="#{asociadoManaged1.onTabChange}" update=":form:agregarAsociado1"/>
+                    </p:tabView>
+                </p:outputPanel>
+            </p:dialog>
+            <!-- Crear nuevo 1-->
+
+            <!-- Ver detalles -->
+            <p:dialog widgetVar="dialogAsociado" modal="false" resizable="false" header="Detalles Asociado" showEffect="fade">
+                <p:outputPanel id="asociadoDetalle" style="text-align: center;">
+                    <p:tabView id="asociadoDetalleTab" rendered="#{not empty asociadoManaged1.vehiculoSeleccionado}">
+                        <p:tab title="Asociado" >
+                            <p:panelGrid columns="2" style="width: 100%; height: 100%;">
+                                <h:outputLabel value="Nombre" for="nombreAsociado2" style="font-weight: bold" />
+                                <h:outputText id="nombreAsociado2" value="#{asociadoManaged1.vehiculoSeleccionado.idAsociado.nombre}" />
+
+                                <h:outputLabel value="Apellido" for="apellidoAsociado2" style="font-weight: bold" />
+                                <h:outputText id="apellidoAsociado2" value="#{asociadoManaged1.vehiculoSeleccionado.idAsociado.apellido}" />
+
+                                <h:outputLabel value="Fecha de Nacimiento" for="fechaNacimientoAsociado2" style="font-weight: bold" />
+                                <h:outputText id="fechaNacimientoAsociado2" value="#{asociadoManaged1.vehiculoSeleccionado.idAsociado.fechaNacimiento}" >
+                                    <f:convertDateTime parent="yyyy-MM-dd" />
+                                </h:outputText>
+
+                                <h:outputLabel value="Cédula" for="cedulaAsociado2" style="font-weight: bold" />
+                                <h:outputText id="cedulaAsociado2" value="#{asociadoManaged1.vehiculoSeleccionado.idAsociado.cedula}"/>
+
+                                <h:outputLabel value="Expedida" for="expedidaCedulaAsociado2" style="font-weight: bold"/>
+                                <h:outputText id="expedidaCedulaAsociado2" value="#{asociadoManaged1.vehiculoSeleccionado.idAsociado.expedida}"/>
+
+                                <h:outputLabel value="Fecha de Afiliación" for="fechaAfiliacion2" style="font-weight: bold"/>
+                                <h:outputText id="fechaAfiliacion2" value="#{asociadoManaged1.vehiculoSeleccionado.idAsociado.fechaAfiliacion}" >
+                                    <f:convertDateTime pattern="yyyy-MM-dd"/>
+                                </h:outputText>
+
+                                <h:outputLabel value="Celular" for="celularAsociado2" style="font-weight: bold"/>
+                                <h:outputText id="celularAsociado2" value="#{asociadoManaged1.vehiculoSeleccionado.idAsociado.celular}"/>
+
+                                <h:outputLabel value="Correo electrónico" for="correoAsociado2" style="font-weight: bold"/>
+                                <h:outputText id="correoAsociado2" value="#{asociadoManaged1.vehiculoSeleccionado.idAsociado.correo}"/> 
+
+                                <h:outputLabel value="Antiguedad en Corabastos" for="antiguedadCorabastos2" style="font-weight: bold"/>
+                                <h:outputText id="antiguedadCorabastos2" value="#{asociadoManaged1.vehiculoSeleccionado.idAsociado.antiguedadCorabastos}" />
+                            </p:panelGrid>
+                        </p:tab>
+                        <p:tab title="Conductor Asignado">
+                            <p:panelGrid columns="4" style="width: 100%; height: 100%;">
+                                <h:outputLabel for="nit2" value="NIC" style="font-weight: bold"/>
+                                <h:outputText id="nit2" value="#{asociadoManaged1.vehiculoSeleccionado.nic.nic}"/>
+
+                                <h:outputLabel for="nombreConductor2" value="Nombre" style="font-weight: bold"/>
+                                <h:outputText id="nombreConductor2" value="#{asociadoManaged1.vehiculoSeleccionado.nic.nombre}" />
+
+                                <h:outputLabel for="apellidoConductor" value="Apellido" style="font-weight: bold"/>
+                                <h:outputText id="apellidoConductor" value="#{asociadoManaged1.vehiculoSeleccionado.nic.apellido}" />
+
+                                <h:outputLabel for="fechaNacimientoConductor" value="Fecha de Nacimiento" style="font-weight: bold"/>
+                                <h:outputText id="fechaNacimientoConductor" value="#{asociadoManaged1.vehiculoSeleccionado.nic.fechaNacimiento}" >
+                                    <f:convertDateTime parent="yyyy-MM-dd" />
+                                </h:outputText>
+
+                                <h:outputLabel for="cedulaConductor2" value="Cédula" style="font-weight: bold"/>
+                                <h:outputText id="cedulaConductor2" value="#{asociadoManaged1.vehiculoSeleccionado.nic.cedula}" />
+
+                                <h:outputLabel for="expedidaCedulaConductor2" value="Expedida" style="font-weight: bold" />
+                                <h:outputText id="expedidaCedulaConductor2" value="#{asociadoManaged1.vehiculoSeleccionado.nic.expedida}"/>
+
+                                <h:outputLabel for="correoConductor2" value="Correo eletrónico" style="font-weight: bold" />
+                                <h:outputText id="correoConductor2" value="#{asociadoManaged1.vehiculoSeleccionado.nic.correo}" />
+
+                                <h:outputLabel for="celularConductor2" value="Celular" style="font-weight: bold"/>
+                                <h:outputText id="celularConductor2" value="#{asociadoManaged1.vehiculoSeleccionado.nic.celular}" />
+
+                                <h:outputLabel for="nivelEscolaridad2" value="Nivel de Escolaridad" style="font-weight: bold"/>
+                                <h:outputText id="nivelEscolaridad2" value="#{asociadoManaged1.vehiculoSeleccionado.nic.nivelEscolaridad}" />
+
+                                <h:outputLabel for="direccion2" value="Dirección" style="font-weight: bold"/>
+                                <h:outputText id="direccion2" value="#{asociadoManaged1.vehiculoSeleccionado.nic.direccion}" />
+
+
+                                <h:outputLabel for="telefono2" value="Teléfono" style="font-weight: bold"/>
+                                <h:outputText id="telefono2" value="#{asociadoManaged1.vehiculoSeleccionado.nic.telefono}" />
+
+                                <h:outputLabel for="barrio2" value="Barrio" style="font-weight: bold"/>
+                                <h:outputText id="barrio2" value="#{asociadoManaged1.vehiculoSeleccionado.nic.barrio}" />
+
+                                <h:outputLabel for="arp2" value="ARP" style="font-weight: bold"/>
+                                <h:outputText id="arp2" value="#{asociadoManaged1.vehiculoSeleccionado.nic.arp}" />
+
+                                <h:outputLabel for="eps2" value="EPS" style="font-weight: bold"/>
+                                <h:outputText id="eps2" value="#{asociadoManaged1.vehiculoSeleccionado.nic.eps}" />
+
+                                <h:outputLabel for="genero2" value="Genero" style="font-weight: bold"/>
+                                <h:outputText id="genero2" value="#{asociadoManaged1.vehiculoSeleccionado.nic.genero}" />
+
+                                <h:outputLabel for="estadoCivil2" value="Estado Civil" style="font-weight: bold"/>
+                                <h:outputText id="estadoCivil2" value="#{asociadoManaged1.vehiculoSeleccionado.nic.estadoCivil}" />
+
+                                <h:outputLabel for="numHijos2" value="Númer de Hijos" style="font-weight: bold"/>
+                                <h:outputText id="numHijos2" value="#{asociadoManaged1.vehiculoSeleccionado.nic.numHijos}" />
+
+                                <h:outputLabel for="grupoSangineo2" value="Grupo sangíneo" style="font-weight: bold"/>
+                                <h:outputText id="grupoSangineo2" value="#{asociadoManaged1.vehiculoSeleccionado.nic.grupoSangineo}" />
+                            </p:panelGrid>
+                        </p:tab>
+                        <p:tab title="Vehículo">
+                            <p:panelGrid columns="4" >
+                                <h:outputLabel for="zona2" value="Zona" style="font-weight: bold"/>
+                                <h:outputText value="#{asociadoManaged1.vehiculoSeleccionado.idZona.nombre}" id="zona2" />
+
+                                <h:outputLabel for="placa2" value="Placa" style="font-weight: bold"/>
+                                <h:outputText id="placa2" value="#{asociadoManaged1.vehiculoSeleccionado.placa}" />
+
+                                <h:outputLabel for="numMotor2" value="Número de motor" style="font-weight: bold"/>
+                                <h:outputText id="numMotor2" value="#{asociadoManaged1.vehiculoSeleccionado.numeroMotor}" />
+
+                                <h:outputLabel for="marca2" value="Marca" style="font-weight: bold"/>
+                                <h:outputText id="marca2" value="#{asociadoManaged1.vehiculoSeleccionado.marca}" />
+
+                                <h:outputLabel for="modelo2" value="Modelo" style="font-weight: bold"/>
+                                <h:outputText id="modelo2" value="#{asociadoManaged1.vehiculoSeleccionado.modelo}" />
+
+                                <h:outputLabel for="numChasis2" value="Número de Chasis" style="font-weight: bold"/>
+                                <h:outputText id="numChasis2" value="#{asociadoManaged1.vehiculoSeleccionado.numeroChasis}" />
+
+                                <h:outputLabel for="servicio2" value="Tipo de Servicio" style="font-weight: bold"/>
+                                <h:outputText id="servicio2" value="#{asociadoManaged1.vehiculoSeleccionado.tipoServicio}" />
+
+                                <h:outputLabel for="tipoVehiculo2" value="Tipo de Vehículo" style="font-weight: bold"/>
+                                <h:outputText id="tipoVehiculo2" value="#{asociadoManaged1.vehiculoSeleccionado.tipoVehiculo}" />
+                            </p:panelGrid>
+
+                            <h3> Soat </h3>
+                            <p:panelGrid columns="2" columnClasses="label,input" style="width: 100%">
+                                <h:outputLabel for="aseguradora2" value="Aseguradora" style="font-weight: bold"/>
+                                <h:outputText id="aseguradora2" value="#{asociadoManaged1.vehiculoSeleccionado.soat.aseguradora}" />
+
+                                <h:outputLabel for="fechaInicioSoat2" value="Fecha de inicio" style="font-weight: bold"/>
+                                <h:outputText id="fechaInicioSoat2" value="#{asociadoManaged1.vehiculoSeleccionado.soat.fechaDeInicio}">
+                                    <f:convertDateTime pattern="yyyy-MM-dd" />
+                                </h:outputText>                        
+
+                                <h:outputLabel for="fechaFinSoat" value="Fecha de Fin" style="font-weight: bold"/>
+                                <h:outputText id="fechaFinSoat" value="#{asociadoManaged1.vehiculoSeleccionado.soat.fechaVencimiento}">
+                                    <f:convertDateTime pattern="yyyy-MM-dd" />
+                                </h:outputText>                                                
+                            </p:panelGrid>
+
+                            <h3> Tecnomecanica </h3>
+                            <p:panelGrid columns="2" columnClasses="label,input" style="width: 100%">
+                                <h:outputLabel for="fechaInicioTecno2" value="Fecha de inicio" style="font-weight: bold"/>
+                                <h:outputText id="fechaInicioTecno2" value="#{asociadoManaged1.vehiculoSeleccionado.tecnomecanica.fechaDeInicio}">
+                                    <f:convertDateTime pattern="yyyy-MM-dd" />
+                                </h:outputText>                        
+
+                                <h:outputLabel for="fechaFinTecno" value="Fecha de Fin" style="font-weight: bold"/>
+                                <h:outputText id="fechaFinTecno" value="#{asociadoManaged1.vehiculoSeleccionado.tecnomecanica.fechaDeVencimiento}">
+                                    <f:convertDateTime pattern="yyyy-MM-dd" />
+                                </h:outputText>                        
+                            </p:panelGrid>
+                        </p:tab>
+                    </p:tabView>
+                </p:outputPanel>
+            </p:dialog>
+            <!-- Ver detalles -->
+
+            <!-- Editar -->
+            <p:dialog widgetVar="dialogEditAsociado" modal="false" resizable="false" header="Actualizar Asociado" showEffect="fade">
+                <p:outputPanel id="editarAsociado" style="text-align: center;" >
+                    <p:tabView id="tabViewEdit" rendered="#{not empty asociadoManaged1.vehiculoSeleccionado}">
+                        <p:tab title="Asociado"  >
+                            <p:panelGrid columns="2" style="width: 100%; height: 100%;">
+                                <h:outputLabel value="Nombre" for="nombreAsociado3" style="font-weight: bold" />
+                                <p:inputText id="nombreAsociado3" value="#{asociadoManaged1.vehiculoSeleccionado.idAsociado.nombre}" />
+
+                                <h:outputLabel value="Apellido" for="apellidoAsociado3" style="font-weight: bold" />
+                                <p:inputText id="apellidoAsociado3" value="#{asociadoManaged1.vehiculoSeleccionado.idAsociado.apellido}" />
+
+                                <h:outputLabel value="Fecha de Nacimiento" for="fechaNacimientoAsociado3" style="font-weight: bold" />
+                                <p:calendar id="fechaNacimientoAsociado3" value="#{asociadoManaged1.vehiculoSeleccionado.idAsociado.fechaNacimiento}" locale="de" navigator="true"
+                                            yearRange="1900:#{asociadoManaged1.fechaNacimientoAsociado}" pattern="yyyy-MM-dd"/>
+
+                                <h:outputLabel value="Cédula" for="cedulaAsociado3" style="font-weight: bold" />
+                                <p:inputText id="cedulaAsociado3" value="#{asociadoManaged1.vehiculoSeleccionado.idAsociado.cedula}"/>
+
+                                <h:outputLabel value="Expedida" for="expedidaCedulaAsociado3" style="font-weight: bold"/>
+                                <p:inputText id="expedidaCedulaAsociado3" value="#{asociadoManaged1.vehiculoSeleccionado.idAsociado.expedida}"/>
+
+                                <h:outputLabel value="Fecha de Afiliación" for="fechaAfiliacion3" style="font-weight: bold"/>
+                                <p:calendar id="fechaAfiliacion3" value="#{asociadoManaged1.vehiculoSeleccionado.idAsociado.fechaAfiliacion}" pattern="yyyy-MM-dd"/>
+
+                                <h:outputLabel value="Celular" for="celularAsociado3" style="font-weight: bold"/>
+                                <p:inputText id="celularAsociado3" value="#{asociadoManaged1.vehiculoSeleccionado.idAsociado.celular}"/>
+
+                                <h:outputLabel value="Correo electrónico" for="correoAsociado3" style="font-weight: bold"/>
+                                <p:inputText id="correoAsociado3" value="#{asociadoManaged1.vehiculoSeleccionado.idAsociado.correo}"/> 
+
+                                <h:outputLabel value="Antiguedad en Corabastos" for="antiguedadCorabastos3" style="font-weight: bold"/>
+                                <p:inputText id="antiguedadCorabastos3" value="#{asociadoManaged1.vehiculoSeleccionado.idAsociado.antiguedadCorabastos}" />
+                            </p:panelGrid>
+                        </p:tab>
+                        <p:tab title="Vehículo">
+                            <p:panelGrid columns="4" >
+                                <h:outputLabel for="zona3" value="Zona" style="font-weight: bold"/>
+                                <p:selectOneMenu value="#{asociadoManaged1.vehiculoSeleccionado.idZona.idZona}" id="zona3" >
+                                    <f:selectItem itemLabel="Seleccione" itemValue="-1" itemDisabled="true"/>
+                                    <f:selectItems var="zona" value="#{zonaManaged.listaZonas}" 
+                                                   itemLabel="#{zona.nombre}"
+                                                   itemValue="#{zona.idZona}"> 
+                                    </f:selectItems>
+                                </p:selectOneMenu>
+
+                                <h:outputLabel for="placa3" value="Placa" style="font-weight: bold"/>
+                                <p:inputText id="placa3" value="#{asociadoManaged1.vehiculoSeleccionado.placa}" />
+
+                                <h:outputLabel for="numMotor3" value="Número de motor" style="font-weight: bold"/>
+                                <p:inputText id="numMotor3" value="#{asociadoManaged1.vehiculoSeleccionado.numeroMotor}" />
+
+                                <h:outputLabel for="marca3" value="Marca" style="font-weight: bold"/>
+                                <p:inputText id="marca3" value="#{asociadoManaged1.vehiculoSeleccionado.marca}" />
+
+                                <h:outputLabel for="modelo3" value="Modelo" style="font-weight: bold"/>
+                                <p:inputText id="modelo3" value="#{asociadoManaged1.vehiculoSeleccionado.modelo}" />
+
+                                <h:outputLabel for="numChasis3" value="Número de Chasis" style="font-weight: bold"/>
+                                <p:inputText id="numChasis3" value="#{asociadoManaged1.vehiculoSeleccionado.numeroChasis}" />
+
+                                <h:outputLabel for="servicio3" value="Tipo de Servicio" style="font-weight: bold"/>
+                                <p:inputText id="servicio3" value="#{asociadoManaged1.vehiculoSeleccionado.tipoServicio}" />
+
+                                <h:outputLabel for="tipoVehiculo3" value="Tipo de Vehículo" style="font-weight: bold"/>
+                                <p:inputText id="tipoVehiculo3" value="#{asociadoManaged1.vehiculoSeleccionado.tipoVehiculo}" />
+                            </p:panelGrid>
+
+                            <h3> Soat </h3>
+                            <p:panelGrid columns="2" columnClasses="label,input" style="width: 100%">
+                                <h:outputLabel for="aseguradora3" value="Aseguradora" style="font-weight: bold"/>
+                                <p:inputText id="aseguradora3" value="#{asociadoManaged1.vehiculoSeleccionado.soat.aseguradora}" />
+
+                                <h:outputLabel for="fechaInicioSoat3" value="Fecha de inicio" style="font-weight: bold"/>
+                                <p:calendar id="fechaInicioSoat3" value="#{asociadoManaged1.vehiculoSeleccionado.soat.fechaDeInicio}" pattern="yyyy-MM-dd"/>                     
+
+                                <h:outputLabel for="fechaFinSoat2" value="Fecha de Fin" style="font-weight: bold"/>
+                                <p:calendar id="fechaFinSoat2" value="#{asociadoManaged1.vehiculoSeleccionado.soat.fechaVencimiento}" locale="de" navigator="true"
+                                            yearRange="1900:#{asociadoManaged1.fechaNacimientoAsociado}" pattern="yyyy-MM-dd"/>                                           
+                            </p:panelGrid>
+
+                            <h3> Tecnomecánica </h3>
+                            <p:panelGrid columns="2" columnClasses="label,input" style="width: 100%">
+                                <h:outputLabel for="fechaInicioTecno3" value="Fecha de inicio" style="font-weight: bold"/>
+                                <p:calendar id="fechaInicioTecno3" value="#{asociadoManaged1.vehiculoSeleccionado.tecnomecanica.fechaDeInicio}" pattern="yyyy-MM-dd"/>
+
+                                <h:outputLabel for="fechaFinTecno2" value="Fecha de Fin" style="font-weight: bold"/>
+                                <p:calendar id="fechaFinTecno2" value="#{asociadoManaged1.vehiculoSeleccionado.tecnomecanica.fechaDeVencimiento}" locale="de" navigator="true"
+                                            yearRange="1900:#{asociadoManaged1.fechaNacimientoAsociado}" pattern="yyyy-MM-dd"/>                      
+                            </p:panelGrid>
+                            <p:commandButton value="Guardar" actionListener="#{asociadoManaged1.actualizar()}" oncomplete="PF('dialogEditAsociado').hide()" update=":form:tablaAsociado" />
+                        </p:tab>
+                    </p:tabView>
+                </p:outputPanel>
+            </p:dialog>
+            <!-- Editar -->
+
+        </h:form>
+    </h:body>
+</html>
+

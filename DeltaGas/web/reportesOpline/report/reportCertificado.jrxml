@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reportCertificado" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c310009f-24c9-4853-9df0-3c06dd219707">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="157"/>
+	<parameter name="cedula" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select nombre, apellido ,cedula, expedida, year(fecha_afiliacion), month(fecha_afiliacion) , day(fecha_afiliacion),
+year(curdate()), month(curdate()), day(curdate())
+from asociado where cedula = $P{cedula} limit 1]]>
+	</queryString>
+	<field name="nombre" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="apellido" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="cedula" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="expedida" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="year(fecha_afiliacion)" class="java.lang.Long"/>
+	<field name="month(fecha_afiliacion)" class="java.lang.Long"/>
+	<field name="day(fecha_afiliacion)" class="java.lang.Long"/>
+	<field name="year(curdate())" class="java.lang.Long"/>
+	<field name="month(curdate())" class="java.lang.Long"/>
+	<field name="day(curdate())" class="java.lang.Long"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="31" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="50" splitType="Stretch">
+			<staticText>
+				<reportElement x="76" y="4" width="346" height="46" uuid="66eb5ea7-1587-4892-b2b5-607c33a4e030"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[EL SUSCRITO JEFE DE TALENTO HUMANO DE LA EMPRESA DE TRANSPORTARES ORGANIZADOS EN CORABASTOS
+CERTIFICA.
+]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="416" splitType="Stretch">
+			<image>
+				<reportElement mode="Transparent" x="96" y="3" width="312" height="193" uuid="efa0b7ba-77eb-498a-82a8-60cfc1b4a827"/>
+				<imageExpression><![CDATA["C:\\Etoc\\Opline-master\\Opline\\report\\ETOC2.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="26" y="15" width="70" height="20" uuid="76f91a7f-e886-48ac-b0c7-73368a4f6545"/>
+				<text><![CDATA[Que el señor ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="96" y="15" width="60" height="20" uuid="e335e971-dc6d-4177-9cdf-10474fe10d32"/>
+				<textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="156" y="15" width="90" height="20" uuid="5f68e975-3d71-477b-a167-65edba5ab0da"/>
+				<textFieldExpression><![CDATA[$F{apellido}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="246" y="15" width="220" height="20" uuid="c34f1a4a-3f21-49e4-9c39-dd936436894b"/>
+				<text><![CDATA[identificado(a) con numero de cedula ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="26" y="35" width="100" height="20" uuid="a5f1d638-0373-49dd-8c90-bea2942ee7c8"/>
+				<textFieldExpression><![CDATA[$F{cedula}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="126" y="35" width="19" height="20" uuid="fb626ff5-4c63-4502-b1db-d6f9ad9d9214"/>
+				<text><![CDATA[de]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="146" y="35" width="69" height="20" uuid="089515d2-47b6-42f9-846c-883f8c964f26"/>
+				<textFieldExpression><![CDATA[$F{expedida}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="215" y="35" width="251" height="20" uuid="803d990b-8dd0-4ca8-8fa1-d27b63004500"/>
+				<text><![CDATA[Presta sus servicios en nuestra empresa en el cargo de]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="26" y="55" width="50" height="20" uuid="0f904b7b-4b50-4aaa-a6d2-e46e94bbe65a"/>
+				<text><![CDATA[de]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="176" y="55" width="112" height="20" uuid="2e089f6c-55bf-4f3c-b562-73dc7aa9b896"/>
+				<text><![CDATA[con un contrato de ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="382" y="55" width="84" height="20" uuid="bfe6142c-19b2-482e-8b97-fd165d8afd74"/>
+				<text><![CDATA[desde el]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="26" y="75" width="119" height="20" uuid="c696ff7d-0957-48cf-a5b9-4da79b0965bb"/>
+				<textFieldExpression><![CDATA[$F{day(fecha_afiliacion)}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="146" y="75" width="30" height="20" uuid="1985038d-5fdc-4879-90f0-1b7e595e1ab7"/>
+				<text><![CDATA[de]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="176" y="75" width="83" height="20" uuid="9fd008a2-83cf-4c86-99b8-a09185177969"/>
+				<textFieldExpression><![CDATA[$F{month(fecha_afiliacion)}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="259" y="75" width="29" height="20" uuid="34259b41-ce25-4c7d-8e22-1ceb7e8585e7"/>
+				<text><![CDATA[de]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="288" y="75" width="94" height="20" uuid="5ccdd805-a869-4e1d-8b3d-e58149912c55"/>
+				<textFieldExpression><![CDATA[$F{year(fecha_afiliacion)}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="382" y="75" width="84" height="20" uuid="8b68f69a-ca99-4de3-bb2d-cb7943cfd99b"/>
+				<text><![CDATA[hasta la fecha, ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="26" y="95" width="440" height="41" uuid="26714d61-ba61-4e35-8f39-5e676e1d86fb"/>
+				<text><![CDATA[recibiendo por su actividad la suma de $2.500.000. DOS MILLONES QUINIENTOS MIL PESOS MTE), pagados mensualmente después de retenciones de ley. Realizando las siguientes funciones.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="76" y="136" width="13" height="20" uuid="e0cb33fd-2879-44fe-b834-f9b4846fdf3e"/>
+				<text><![CDATA[1]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="76" y="156" width="13" height="20" uuid="5e42cb1e-953e-447f-9a8f-4b8363f3cd6a"/>
+				<text><![CDATA[2]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="76" y="176" width="13" height="20" uuid="de249593-bde9-48d3-b7ac-b5b3c1b38549"/>
+				<text><![CDATA[3]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="89" y="136" width="279" height="20" uuid="7926f82a-2ef7-493a-821c-9129db235e94"/>
+				<text><![CDATA[______________________________________________]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="89" y="156" width="279" height="20" uuid="d75875b6-ef0c-40b5-a033-7b8b4c24f695"/>
+				<text><![CDATA[______________________________________________]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="89" y="176" width="279" height="20" uuid="ca848ed2-0689-4507-a592-92eae5b7a455"/>
+				<text><![CDATA[______________________________________________]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="26" y="213" width="189" height="20" uuid="574a87ff-5c1f-4419-9510-04af45ab3ef3"/>
+				<text><![CDATA[Se expide a solicitud del interesado.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="76" y="55" width="100" height="20" uuid="f393ed91-2cbb-4a8c-9769-4c6b4cedde1a"/>
+				<text><![CDATA[Asociado]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="288" y="55" width="94" height="20" uuid="bbf2536e-e487-42b2-a913-7beeab4beaf5"/>
+				<text><![CDATA[Afiliado]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="25" y="233" width="50" height="20" uuid="e3121e40-94b6-42a0-94cb-775a100ee5f8"/>
+				<text><![CDATA[Dada a los]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="75" y="233" width="38" height="20" uuid="9853e242-e79a-4a18-a2bc-8375f564d32f"/>
+				<textFieldExpression><![CDATA[$F{day(curdate())}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="113" y="233" width="83" height="20" uuid="9898f648-6011-44a9-b643-42862600b22b"/>
+				<text><![CDATA[días del mes de ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="196" y="233" width="50" height="20" uuid="eab3d1d6-8fc7-4f57-a858-692997c3df03"/>
+				<textFieldExpression><![CDATA[$F{month(curdate())}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="246" y="233" width="27" height="20" uuid="267432e1-4df9-487b-aed2-dc477910b134"/>
+				<text><![CDATA[del]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="273" y="233" width="47" height="20" uuid="e98c2a37-ab16-452f-a6c3-53295c00fe6b"/>
+				<textFieldExpression><![CDATA[$F{year(curdate())}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="26" y="267" width="100" height="20" uuid="554fe99c-4c83-41cc-b64f-e8c1649c6848"/>
+				<text><![CDATA[Cordialmente]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="26" y="312" width="189" height="92" uuid="aa37f8c7-daa9-4ad4-a2c4-c5d148dc168e"/>
+				<text><![CDATA[JORGE ENRIQUE SEGURA RAMIREZ
+Jefe De Talento Humano
+Empresa De Transportadores Organizados En Corabastos.
+Jorgese2009@hotmail.com.
+etocsas@hotmail.com
+3102932261.
+]]></text>
+			</staticText>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="38" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

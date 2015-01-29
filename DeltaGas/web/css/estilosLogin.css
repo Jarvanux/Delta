@@ -1,0 +1,317 @@
+
+*{
+    margin: 0px;
+}
+/*            #header{
+                width: 100%;
+                height: 60px;
+                border-top: 3px solid #F39538;
+            }*/
+
+header.header1 {
+    border-top: 3px #273585 solid;
+    width: 100%;    
+    display: block;
+    margin: 0;
+    padding: 4px 0 0 0;
+    padding-bottom: 4px;
+    font-weight: lighter;
+    background: #fff;     
+    border-bottom: 2px solid #e5e5e5;    
+}
+header.header1>div {
+    width: 900px;
+    margin: .5em auto 0 auto;                
+}
+.nav1 {
+    position: relative;
+    width: 100%;
+    margin: 0;
+}
+
+#div1 {
+    padding-right: 15px;
+    position: relative;                
+    float: left;
+    display: block;
+    margin: 0;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.linkOpline {
+    font-size: 20px;
+    display: inline-block;
+    color: #000;
+    text-decoration: none;
+    letter-spacing: -1px;
+    margin: 0 .4em 0 0;
+    vertical-align: top;
+}
+
+#logoOpline {
+    float: left;    
+    width: 220px;
+}
+
+.linkOpline span {
+    display: inline-block;
+    margin-top: 25px;
+    float: right;
+    font-size: 1.3em;
+    letter-spacing: -0.04em;
+    font-family: Helvetica,Arial,sans-serif;  
+    font-weight: bold;
+    color: #aaa;
+}
+
+.paginaMaestra {
+    background-color: #f6f6f6;
+    color: #000;
+    max-width: none;
+    width: auto;
+    padding: 0;
+}
+
+main section {
+    display: block;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    vertical-align: baseline;
+}
+section {
+    display: block;
+}
+
+main {
+    font: 100%/1.4 Helvetica,Arial,sans-serif;
+    max-width: 900px;
+    min-height: 500px;
+    margin: 0 auto;
+    padding: 20px 0 0 0;
+    background-image: url('../imagenes/bg.gif');
+}
+
+.contenedor {
+    max-width: 900px;
+    margin: 0 auto;                
+    background-position: center center;                                
+}
+h2 {
+    line-height: 1.1;
+    font-size: 3.5em;
+    color: #273585;
+}
+h3 {
+    font-size: 1.7em;
+    letter-spacing: -0.04em;
+    color: #3BB036;
+}
+
+.textos p{
+    color: #96918B;
+}
+main p {
+    margin-top: 1em;
+    margin-bottom: 1.5em;
+    margin-bottom: .5em;
+    font-size: 1em;
+    line-height: 1.6;
+}
+footer.piePagina{
+    clear: both;
+    border-top: 2px #e5e5e5 solid;
+    padding-bottom: 100px;
+    background: #f6f6f6;
+    margin: 0;
+    display: block;
+}            
+aside {
+    padding: 1em .5em;
+    margin: 0;
+    background: #fff;
+    border-bottom: 2px #e5e5e5 solid;
+    height: 300px;
+}
+.extra {
+    clear: both;
+    position: relative;
+    max-width: 900px;
+    margin-top: 100px;
+    margin: 0 auto;
+}
+.extra h2{
+    font-size: .8em;
+    font-weight: normal;
+    display: inline;           
+    margin-top: 12px;
+    float: left;
+    font-family: verdana;                 
+}       
+
+.extra img{
+    width: 16px;
+    height: 16px;
+    margin-top: 12px;
+}
+
+#redesSociales{
+    display: inline;   
+    margin-left: 4px;
+}
+
+/*./extra span{
+    display: inline;
+    float: right;
+}*/
+
+.textos{
+    float: left;
+    width: 300px;
+    padding-top: 11%;
+    margin-left: 4%;
+}
+
+.login{     
+    text-align: center;
+    margin-top: 6%;
+    width: 380px;                
+    height: 400px;
+    background-color: #4E92C5;
+    box-shadow: 0px 0px 7px #221B1B;
+    float: right;
+    /* border-radius: 10px; */
+    margin-right: 4%;                
+    /*                box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 0, 0, 0.1) inset;*/;
+}
+#contenedorLogin{
+    margin: 0 auto;                                
+    width: 100%;                
+    height: 220px;
+    background-color: #fff;
+    font-family: Helvetica,Arial,sans-serif;     
+}
+#contenedorTexto span{                          
+    font-size: 1.7em;                
+    color: #fff;
+    font-weight: bold;
+    float: left;
+    margin-left: 40px;
+    text-shadow: 1px 1px 1px #847878;
+}
+#contenedorTexto{     
+    padding-top: 6%;
+    width: 100%;
+    height: 60px;
+    /* background-color: #273585; */        
+}
+#piePaginaLogin{
+    width: 100%;
+    height: 80px;
+
+    text-shadow: 1px 1px 1px #000;
+}
+#final{
+    width: 900px;
+    margin: 1em auto;                
+}
+#logoSena{                
+    display: block;
+}
+#derechos{                    
+    float: right;
+    font-size: 10px;
+    color: #808389; 
+    margin-top: 43px;                
+}
+#infoSena{
+    max-width: 72%;
+}
+
+#btnEntrar{
+    background: #d9d9d9;
+    -moz-box-shadow: 0px 0px 2px #eaeaea inset;
+    -webkit-box-shadow: 0px 0px 2px #eaeaea inset;
+    box-shadow: 0px 0px 2px #eaeaea inset;
+    color: #222;
+    background: #e3e3e3;
+    border: 1px solid #ccc;
+    color: #333;
+    font-family: "Trebuchet MS", "Myriad Pro", sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 8px 0 9px;
+    text-align: center;
+    width: 150px;
+    cursor: pointer;
+    float: right;
+    margin: 15px 20px 10px 10px;
+    text-shadow: 0px 1px 0px #fff;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    -moz-box-shadow: 0px 0px 2px #fff inset;
+    -webkit-box-shadow: 0px 0px 2px #fff inset;
+    box-shadow: 0px 0px 2px #fff inset;
+}
+
+#recuperarClave{
+    color: #fff;
+    float: left;
+    font-size: 8px;
+    margin-top: 60px;
+}
+
+#contenedorLogin{
+    border-top: 3px solid #273585;
+    font-size: 10px;
+    height: 230px;  
+}
+
+#aRecuperacion{
+    font-size: 13px;
+    float: right;
+    margin-right: 50px;
+}
+
+#img1{
+    width: 40px;
+    height: 40px;
+    float: right;
+}
+
+#img2{
+    width: 35px;
+    height: 35px;
+    float: right;
+}
+
+#contenedorTexto2 span{                          
+    font-size: 1.7em;                
+    color: #fff;
+    font-weight: bold;    
+    margin: 0 auto;
+    text-shadow: 1px 1px 1px #000;
+}
+#contenedorTexto2{     
+    padding-top: 6%;
+    width: 100%;
+    height: 60px;
+    background-color: #6DA7D2;
+}
+
+#contentExtra{
+    float: right;
+    font-family: Helvetica,Arial,sans-serif;      
+}
+
+nav a{
+    width: 900px;
+}
+#contenedorTexto{
+    border-radius: 10px 10px 0px 0px !important;        
+}
+.login{
+    border-radius: 10px !important;    
+}

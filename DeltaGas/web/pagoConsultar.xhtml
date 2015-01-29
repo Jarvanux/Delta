@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      >
+    <h:head>
+        <title>Pago</title>
+        <link type="text/css" rel="stylesheet"
+              href="theme.css" />
+    </h:head>
+    <h:body>
+        <h:form id="form">
+            <p:growl id="mensaje2" autoUpdate="true" showSummary="false"  showDetail="true"/>  
+
+            <p:dataTable id="tabla" var="pago" value="#{pagoManaged.listaPagos}" widgetVar="pagoTable" style="font-family: calibri; width: 100%;"                         
+                         emptyMessage="No hay registros" filteredValue="#{pagoManaged.filtroPagos}"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         paginator="true"
+                         selectionMode="single"           
+                         rowKey="#{pago.numeroRecibo}"
+                         rows="10"
+                         rowsPerPageTemplate="10,25,50,100"                         
+                         >
+                <f:facet name="header">               
+                    <p:outputPanel style="text-align: right" > 
+                        <p:outputLabel value="Tipo de pago:" for="tipoPago1" style="float:left; margin-top: 6px;" />
+                        <p:selectOneMenu value="#{pagoManaged.listarPor}" id="tipoPago1" style="width:180px; text-align: left; float: left; margin-top: 5px; margin-left: 5px;" >
+                            <f:selectItem  itemLabel="Todos" itemValue="-1"/>
+                            <f:selectItems var="tipoPago1" itemLabel="#{tipoPago1.nombrePago}" itemValue="#{tipoPago1.idTipoPago}" 
+                                           value="#{tipoPagoManaged.listaTipoPago}" />                            
+                            <p:ajax listener="#{pagoManaged.listarPor()}" update=":form"  />
+                            <p:ajax onstart="PF('pagoTable').filter()" />
+                        </p:selectOneMenu>                                       
+                        <p:inputText id="globalFilter" onkeyup="PF('pagoTable').filter()" style="width:150px; " placeholder="Buscar" />                        
+                    </p:outputPanel>                   
+                </f:facet>
+
+                <p:column headerText="Tipo de pago" filterBy="#{pago.idTipoPago.nombrePago}" filterStyle="display:none"  filterMatchMode="contains">                    
+                    <h:outputText value="#{pago.idTipoPago.nombrePago}" />
+                </p:column>
+                <p:column headerText="Número de recibo" sortBy="#{pago.numeroRecibo}" filterBy="#{pago.numeroRecibo}" filterStyle="display:none"  filterMatchMode="contains">                
+                    <h:outputText value="#{pago.numeroRecibo}" />
+                </p:column>                
+                <p:column headerText="Cedula" filterBy="#{pago.idAsociado.cedula}" filterStyle="display:none"  filterMatchMode="contains">                    
+                    <h:outputText value="#{pago.idAsociado.cedula}" />
+                </p:column>                
+                <p:column headerText="Asociado" filterBy="#{pago.idAsociado.nombre} #{pago.idAsociado.apellido}" filterStyle="display:none"  filterMatchMode="contains">                
+                    <h:outputText value="#{pago.idAsociado.nombre} #{pago.idAsociado.apellido}" />
+                </p:column>                                
+                <p:column headerText="Fecha del pago" sortBy="#{pago.fechaPago}" filterBy="#{pago.fechaPago}" filterStyle="display:none"  filterMatchMode="contains">                
+                    <h:outputText value="#{pago.fechaPago}" style="width:100%" ><f:convertDateTime pattern="YYYY/MM/dd" /></h:outputText>
+                </p:column>                         
+                <p:column headerText="Opciones" style="width:12%;">                                                            
+                    <p:commandButton oncomplete="PF('dlgDetalles').show()" icon="ui-icon-circle-plus" style=" width: 25px; height: 25px; float: left;" title="Editar" update=":form:displayDetalles" >
+                        <f:setPropertyActionListener value="#{pago}" target="#{pagoManaged.pago}" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>   
+
+            <!-- Detalles Pago -->
+            <p:dialog widgetVar="dlgDetalles" modal="false" resizable="false" header="Detalles Pago" showEffect="puff" hideEffect="explode">
+                <p:outputPanel id="displayDetalles" style="text-align: left;">
+                    <p:panelGrid columns="2" rendered="#{not empty pagoManaged.pago}">
+                        <p:outputLabel value="Número de recibo: " />
+                        <p:outputLabel value="#{pagoManaged.pago.numeroRecibo}" />
+                        <p:outputLabel value="Asociado: "/>
+                        <p:outputLabel value="#{pagoManaged.pago.idAsociado.nombre} #{pagoManaged.pago.idAsociado.apellido}" />
+                        <p:outputLabel value="Razón de pago:" />
+                        <p:outputLabel value="#{pagoManaged.pago.idTipoPago.nombrePago}" />
+                        <p:outputLabel value="Valor de pago:" />
+                        <p:outputLabel value="#{pagoManaged.pago.valorPago}" />
+                        <p:outputLabel value="Observación:" />
+                        <p:outputLabel value="#{pagoManaged.pago.observacion}" />
+                    </p:panelGrid>                    
+                </p:outputPanel>
+                <p:panel style="text-align: right; margin: 0px;">
+                    <p:commandButton onclick="PF('dlgDetalles').hide()" value="Volver Atrás" />
+                </p:panel>
+            </p:dialog>
+            <!-- Fin detalles Pago -->             
+        </h:form>
+    </h:body>
+</html>
+

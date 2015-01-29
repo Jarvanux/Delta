@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui" 
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Reuniones</title>
+    </h:head>
+    <h:body>
+        <h:form id="form">
+            <p:growl id="mensaje2" autoUpdate="true" showSummary="false"  showDetail="true"/>
+
+            <p:dataTable id="tabla" var="reunion" value="#{reunionManaged.listaReuniones}" widgetVar="tablaReunion" style="font-family: calibri; width: 100%;"
+                         emptyMessage="No hay registros" filteredValue="#{reunionManaged.filtroReuniones}"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         paginator="true"
+                         rows="10"
+                         selectionMode="single"           
+                         rowKey="#{reunion.idReunion}"
+                         rowsPerPageTemplate="10,20,30,40,50,60,70,80,90,100" >                
+
+                <f:facet name="header">
+                    <p:outputPanel style="text-align: right" >                                           
+                        <p:outputLabel value="Consulta de Reuniones" style="float: left; margin-left: 10%;"/>
+                        <p:inputText id="globalFilter" onkeyup="PF('tablaReunion').filter()" style="width:150px; " placeholder="Buscar" />                        
+                    </p:outputPanel>                   
+                </f:facet>
+
+                <p:column headerText="Nombre reunión" filterBy="#{reunion.nombre}" filterStyle="display:none"  filterMatchMode="contains">
+                    <h:outputText value="#{reunion.nombre}" />                  
+                </p:column>
+                <p:column headerText="Descripción" filterBy="#{reunion.descripcion}" filterStyle="display:none" filterMatchMode="contains">
+                    <h:outputText value="#{reunion.descripcion}" />
+                </p:column>
+                <p:column headerText="Fecha" filterBy="#{reunion.fechaReunion}"  filterStyle="display:none"  filterMatchMode="contains">
+                    <h:outputText value="#{reunion.fechaReunion}">
+                        <f:convertDateTime pattern="yyyy/MM/dd"/>
+                    </h:outputText>                          
+                </p:column>
+                <p:column headerText="Lugar" filterBy="#{reunion.lugar}" filterStyle="display:none" filterMatchMode="contains">     
+                    <h:outputText value="#{reunion.lugar}" />                               
+                </p:column>
+                <p:column headerText="Estado" filterBy="#{reunion.estadoReunion}" filterStyle="display:none" filterMatchMode="contains">        
+                    <h:outputText value="#{reunion.estadoReunion}" />                  
+                </p:column>                               
+            </p:dataTable>                         
+
+        </h:form>
+    </h:body>
+</html>
+

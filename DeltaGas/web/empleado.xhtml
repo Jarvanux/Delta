@@ -1,0 +1,320 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui" 
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>                
+        <script type="text/javascript">
+            function subirImagen() {
+                dlgSubirFoto.show();
+            }
+        </script>
+        <script src="js/traducirCalendario.js" type="text/javascript" />
+    </h:head>
+    <h:body>
+        <p:dialog id="dlgSubirFoto2" widgetVar="dlgSubirFoto" resizable="false" header="Subir foto" showEffect="fade" hideEffect="explode">
+            <h:form id="form2" enctype="multipart/form-data">
+                <div style="width: 600px;; height: 150px;">
+                    <p:fileUpload fileUploadListener="#{empleadoManaged.subirImagen}" mode="advanced" fileLimit="3" label="Seleccionar" uploadLabel="Subir" cancelLabel="Cancelar" auto="true"
+                                  oncomplete="PF('dlgSubirFoto').hide(), PF('dlgEditarImagen').hide()" update=":form:fotoCrearEmpleado, :form:fotoEditarEmpleado" />        
+                </div>
+            </h:form>
+        </p:dialog>
+
+
+        <p:growl id="mensaje2" autoUpdate="false" showSummary="false"  showDetail="true" />           
+        <h:form id="form" >    
+            <!--            <div style="width: 100%; text-align: center;">
+                            <p:outputLabel value="Gestión empleados" style="font-weight: bold; text-align: center; color: #e78f08; font-size: 18px;"/>
+                        </div>-->
+            <p:dialog id="dlgDeshabilitar" widgetVar="dlgDeshabilitar" resizable="false" header="Confirmación" showEffect="fade" hideEffect="explode">
+                <div style="width: 300px; text-align: center; border: 0px;">
+                    <div style="width: 300px; text-align: center; border: 0px;">
+                        <p:outputLabel id="mensaje" value="#{empleadoManaged.smsAyD}" />                                                                                           
+                    </div>
+                    <br></br>
+                    <p:commandButton value="Si"  action="#{empleadoManaged.deshabilitar()}" icon="ui-icon-check" update=":form, :mensaje2" />
+                    <p:commandButton value="No" onclick="PF('dlgDeshabilitar').hide()" icon="ui-icon-close" />                                      
+                </div>
+            </p:dialog>
+            <p:dataTable id="tabla" var="empleado" value="#{empleadoManaged.listaEmpleado}" widgetVar="empleadoTable" style="margin-bottom:20px; font-family: calibri; width: 100%;"
+                         emptyMessage="No hay registros" filteredValue="#{empleadoManaged.filtroEmpleado}"                         
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         paginator="true"
+                         rows="10"
+                         selectionMode="single"                              
+                         rowKey="#{empleado.idEmpleado}"
+                         rowsPerPageTemplate="10,25,50,100"                         
+                         >                             
+                <f:facet name="header">
+                    <p:outputPanel style="text-align: right; font-family: calibri;" >                                      
+                        <p:selectOneRadio id="listarPor"  columns="4" value="#{empleadoManaged.listarPor}" style=" width: 300px; float: left;"  >
+                            <f:selectItem itemLabel="Activos" itemValue="Activos" />
+                            <f:selectItem itemLabel="Deshabilitados" itemValue="Dehabilitados" />                              
+                            <p:ajax listener="#{empleadoManaged.listarPorPreferencia()}" update=":form:tabla"  onstart="PF('empleadoTable').filter()"/>
+                        </p:selectOneRadio>                    
+                        <div id="estado">
+
+                        </div>
+                        <p:commandButton value="Crear Nuevo"  style="  margin-right: 10%;">                                                                       
+                            <p:ajax listener="#{empleadoManaged.limpiar()}" update=":form" />                                                                                                    
+                            <p:ajax onstart="PF('dlg').show()" /> 
+                        </p:commandButton>                        
+
+                        <p:inputText id="globalFilter" onkeyup="PF('empleadoTable').filter()" style="width:150px; " placeholder="Buscar" />                        
+                    </p:outputPanel>                   
+                </f:facet>
+
+                <p:column headerText="Rol" filterBy="#{empleado.idRol.nombre}" filterStyle="display:none"  filterMatchMode="contains">                    
+                    <h:outputText value="#{empleado.idRol.nombre}" />
+                </p:column>
+                <p:column headerText="Cedula" filterBy="#{empleado.cedula}" filterStyle="display:none"  filterMatchMode="contains">                    
+                    <h:outputText value="#{empleado.cedula}" />
+                </p:column>                
+                <p:column headerText="Asociado" filterBy="#{empleado.nombre} #{empleado.apellido}" filterStyle="display:none"  filterMatchMode="contains">                    
+                    <h:outputText value="#{empleado.nombre} #{empleado.apellido}" />                                            
+                </p:column>                                
+                <p:column headerText="Celular" filterBy="#{empleado.celular}" filterStyle="display:none"  filterMatchMode="contains">                    
+                    <h:outputText value="#{empleado.celular}" style="width:100%" />
+                </p:column>               
+                <p:column headerText="Teléfono" filterBy="#{empleado.telefono}" filterStyle="display:none"  filterMatchMode="contains">                    
+                    <h:outputText value="#{empleado.telefono}" style="width:180%" />
+                </p:column>     
+                <p:column headerText="Correo" filterBy="#{empleado.correo}" filterStyle="display:none"  filterMatchMode="contains">                
+                    <h:outputText value="#{empleado.correo}" style="width:100%" />
+                </p:column>                                
+                <p:column headerText="Opciones" style="width:12%;">                                                            
+                    <p:commandButton style=" width: 25px; height: 25px; float: left;" icon="ui-icon-circle-plus" title="Detalles" > 
+                        <p:ajax onstart="PF('dlg2').show()" />
+                        <p:ajax listener="#{empleadoManaged.prepararEdicion(empleado)}" update=":form:display2, :form:fotoDetallesEmpledo" />                                                      
+                    </p:commandButton>
+
+                    <p:commandButton  icon="ui-icon-pencil" title="Editar" style="width: 25px; height: 25px; float: left;" >                                                                                                       
+                        <p:ajax update=":form"/>
+                        <p:ajax onstart="PF('dlg33').show()" />
+                        <p:ajax listener="#{empleadoManaged.prepararEdicion(empleado)}" update=":form:display33, :form:fotoEditarEmpleado" />                                                                              
+                    </p:commandButton>                    
+                    <p:commandButton style=" width: 25px; height: 25px; float: left;" icon="#{empleadoManaged.iconoAyD}" title="#{empleadoManaged.tituloAyD}" >                            
+                        <p:ajax listener="#{empleadoManaged.prepareDatos(empleado)}" />                              
+                        <p:ajax onstart="PF('dlgDeshabilitar').show()" update=":form:mensaje"/>
+                    </p:commandButton>                    
+                </p:column>
+
+            </p:dataTable>   
+
+
+            <!-- DETALLES -->
+            <p:dialog widgetVar="dlg2" id="dlg2" resizable="false" header="Detalles empleado" showEffect="clip" hideEffect="explode">
+                <div style="float: left; border: 1px solid #A6C9E2; padding: 2px; text-align: center;">
+                    <p:graphicImage id="fotoDetallesEmpledo" value="#{empleadoManaged.datos.foto}" width="150" height="150" style="display: block;"/>                                            
+                </div>   
+                <p:panelGrid id="display2" columns="2" columnClasses="label,value">                                                                                                   
+                    <h:outputLabel value="Rol asignado:" for="roles2" style="font-weight: bold;"/>                    
+                    <p:outputLabel id="roles2" value="#{empleadoManaged.datos.idRol.nombre}"/>
+                    <p:outputLabel for="nombre2" value="Nombre:" style="font-weight: bold;"/>
+                    <p:outputLabel id="nombre2" value="#{empleadoManaged.datos.nombre}"  style="width:172px; text-align: left;" />
+                    <p:outputLabel for="apellidos2" value="Apellidos:" style="font-weight: bold;"/>
+                    <p:outputLabel id="apellidos2" value="#{empleadoManaged.datos.apellido}" style="width:172px; text-align: left;" />
+                    <p:outputLabel for="cedula2" value="Cedula:" style="font-weight: bold;"/>
+                    <p:outputLabel id="cedula2" value="#{empleadoManaged.datos.cedula}" style="width:172px; text-align: left;"/>
+                    <p:outputLabel for="expedida2" value="Expedida:" style="font-weight: bold;"/>
+                    <p:outputLabel id="expedida2" value="#{empleadoManaged.datos.expedida}" style="width:172px; text-align: left;"/>                                
+                    <p:outputLabel for="celular2" value="Celular:" style="font-weight: bold;"/>
+                    <p:outputLabel id="celular2" value="#{empleadoManaged.datos.celular}"  style="width:172px; text-align: left;"/>
+                    <p:outputLabel for="telefono2" value="Teléfono:" style="font-weight: bold;"/>
+                    <p:outputLabel id="telefono2" value="#{empleadoManaged.datos.telefono}"  style="width:172px; text-align: left;"/> 
+                    <p:outputLabel for="correo2" value="Correo:" style="font-weight: bold;"/>
+                    <p:outputLabel id="correo2" value="#{empleadoManaged.datos.correo}" style="width:172px; text-align: left;"/>
+                    <p:outputLabel for="direccion2" value="Dirección:" style="font-weight: bold;"/>
+                    <p:outputLabel id="direccion2" value="#{empleadoManaged.datos.direccion}" style="width:172px; text-align: left;"/>                                         
+                    <p:outputLabel value="Fecha Nacimiento:" style="font-weight: bold;" />                    
+                    <p:outputLabel value="#{empleadoManaged.datos.fechaNacimiento}" ><f:convertDateTime pattern="dd/MM/yyyy"/></p:outputLabel>
+                    <p:outputLabel value="Antiguedad:" style="font-weight:bold;" />
+                    <p:outputLabel value="#{empleadoManaged.antiguedad()}" title="#{empleadoManaged.datos.fechaRegistro}" ><f:convertDateTime pattern="dd/MM/yyyy"/></p:outputLabel>
+                </p:panelGrid>
+                <p:panel  style="border:0px; text-align: right;">                        
+                    <p:commandButton value="Volver atrás" oncomplete="PF('dlg2').hide()" />                     
+                </p:panel>
+            </p:dialog> 
+            <!-- FIN DETALLES -->     
+
+            <!-- EDITAR EMPLEADO -->
+            <p:dialog id="dlg33" widgetVar="dlg33" resizable="false" header="Editar Empleado" showEffect="clip" hideEffect="explode">
+                <div style="float: left; border: 1px solid #A6C9E2; padding: 2px; text-align: center;">
+                    <p:graphicImage id="fotoEditarEmpleado" value="#{empleadoManaged.datos.foto}" width="150" height="150" style="display: block;"/>                                            
+                    <p:commandLink value="Editar" onclick="PF('dlgEditarImagen').show()"/>
+                </div>       
+                <p:panelGrid id="display33" columns="3" columnClasses="label,value" >                            
+                    <h:outputLabel value="Rol asignado:" for="roles33" />                                        
+                    <p:selectOneMenu value="#{empleadoManaged.rolEdit}" id="roles33" style="width:180px; text-align: left;" >
+                        <f:selectItem  itemLabel="Seleccione" itemValue="-1"/>
+                        <f:selectItems var="roles33" itemLabel="#{roles33.nombre}" itemValue="#{roles33.idRol}" 
+                                       value="#{rolesManaged.listaRol}" />
+                    </p:selectOneMenu>
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenInteger1}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel for="nombre33" value="Nombre:" />
+                    <p:inputText id="nombre33" value="#{empleadoManaged.datos.nombre}" style="width:172px; text-align: left; " />
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString1}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel for="apellidos33" value="Apellidos:" />
+                    <p:inputText id="apellidos33" value="#{empleadoManaged.datos.apellido}" style="width:172px; text-align: left;" />
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString2}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel value="Genero:" for="sexoEditar"/>
+                    <p:selectOneMenu value="#{empleadoManaged.sexoEditar}" id="sexoEditar" style="width:180px; text-align: left;" >
+                        <f:selectItem  itemLabel="Seleccione" itemValue="-1"/>
+                        <f:selectItems var="sexosEditar" itemLabel="#{sexosEditar.descripcion}" itemValue="#{sexosEditar.idSexo}" 
+                                       value="#{sexoManaged.listaSexos}" />
+                    </p:selectOneMenu>
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenInteger2}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel for="cedula33" value="Cedula:" />
+                    <p:inputText id="cedula33" value="#{empleadoManaged.datos.cedula}" style="width:172px; text-align: left;" />
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString3}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel for="expedida33" value="Expedida:" />
+                    <p:inputText id="expedida33" value="#{empleadoManaged.datos.expedida}" style="width:172px; text-align: left;"/>                                
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString4}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel for="celular33" value="Celular:" />
+                    <p:inputMask id="celular33" value="#{empleadoManaged.datos.celular}" mask="(999) 999-9999" style="width:172px; text-align: left; "/>
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString5}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel for="telefono33" value="Teléfono:" />
+                    <p:inputMask id="telefono33" value="#{empleadoManaged.datos.telefono}" mask="999-9999? x99999" style="width:172px; text-align: left; "/> 
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString6}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel for="correo33" value="Correo:" />
+                    <p:inputText id="correo33" value="#{empleadoManaged.datos.correo}" style="width:172px; text-align: left;"/>
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString7}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel for="direccion33" value="Dirección:" />
+                    <p:inputText id="direccion33" value="#{empleadoManaged.datos.direccion}" style="width:172px; text-align: left;"/>                        
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString8}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel value="Fecha nacimiento:" for="fechaNac2" />
+                    <p:calendar id="fechaNac2" value="#{empleadoManaged.datos.fechaNacimiento}" locale="es" navigator="true" yearRange="c-70:c+0" pattern="dd/MM/yyyy"/>
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString10}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel value="Clave:" />                                                                                                    
+                    <p:commandButton value="Cambiar clave" actionListener="#{empleadoManaged.cambiarClave()}" onclick="PF('cargando').show()" oncomplete="PF('cargando').hide(); PF('dlgMensajeCreacion').show()" update=":form" ajax="true"/>
+                </p:panelGrid>                
+                <p:panel  style="border:0px; text-align: right;">                        
+                    <p:commandButton value="Guardar Cambios" action="#{empleadoManaged.validarEditar()}"  update=":form, :mensaje2" />                     
+                    <p:commandButton type="button" value="Cancelar" onclick="PF('dlg33').hide()" />                    
+                </p:panel>
+            </p:dialog> 
+            <!-- FIN EDITAR -->     
+
+
+
+            <script type="text/javascript">
+                if (#{empleadoManaged.completoEditar}) {
+                    // showDialog();
+                    dlg33.hide();
+                } else {
+                    dlg33.show();
+                }
+            </script>       
+
+            <!-- CREACIÓN DE UN NUEVO EMPLEADO -->
+            <p:dialog widgetVar="dlg" resizable="false" header="Crear Nuevo Empleado" showEffect="fade" hideEffect="explode" >             
+                <div style="float: left; border: 1px solid #A6C9E2; padding: 2px; text-align: center;">
+                    <p:graphicImage id="fotoCrearEmpleado" value="#{empleadoManaged.foto}" width="150" height="150" style="display: block;"/>                                            
+                    <p:commandLink value="Editar" onclick="PF('dlgEditarImagen').show()"/>
+                </div>   
+                <p:panelGrid id="display" columns="3" columnClasses="label,value">                                                        
+                    <h:outputLabel value="Rol asignado:" for="roles"/>                    
+                    <p:selectOneMenu value="#{empleadoManaged.rol}" id="roles" style="width:180px; text-align: left;" >
+                        <f:selectItem  itemLabel="Seleccione" itemValue="-1"/>
+                        <f:selectItems var="roles" itemLabel="#{roles.nombre}" itemValue="#{roles.idRol}" 
+                                       value="#{rolesManaged.listaRol}" />
+                    </p:selectOneMenu>
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenInteger1}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel for="nombre" value="Nombre:" />
+                    <p:inputText id="nombre" value="#{empleadoManaged.nombre}" style="width:172px; text-align: left;" />
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString1}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel for="apellidos" value="Apellidos:" />
+                    <p:inputText id="apellidos" value="#{empleadoManaged.apellido}" style="width:172px; text-align: left;"/>
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString2}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel value="Genero:" for="sexo"/>
+                    <p:selectOneMenu value="#{empleadoManaged.sexo}" id="sexo" style="width:180px; text-align: left;" >
+                        <f:selectItem  itemLabel="Seleccione" itemValue="-1"/>
+                        <f:selectItems var="sexosEditar" itemLabel="#{sexosEditar.descripcion}" itemValue="#{sexosEditar.idSexo}" 
+                                       value="#{sexoManaged.listaSexos}" />
+                    </p:selectOneMenu>
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenInteger2}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel for="cedula" value="Cedula:" />
+                    <p:inputText id="cedula" value="#{empleadoManaged.cedula}" style="width:172px; text-align: left;"/>
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString3}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel for="expedida" value="Expedida:" />
+                    <p:inputText id="expedida" value="#{empleadoManaged.expedida}" style="width:172px; text-align: left;"/>  
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString4}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel for="celular" value="Celular:" />
+                    <p:inputMask id="celular" value="#{empleadoManaged.celular}" mask="(999) 999-9999" style="width:172px; text-align: left;"/>
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString5}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel for="telefono" value="Teléfono:" />
+                    <p:inputMask id="telefono" value="#{empleadoManaged.telefono}" mask="999-9999? x99999" style="width:172px; text-align: left;"/> 
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString6}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel for="correo" value="Correo:" />
+                    <p:inputText id="correo" value="#{empleadoManaged.correo}" style="width:172px; text-align: left;"/>
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString7}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel for="direccion" value="Dirección:" />
+                    <p:inputText id="direccion" value="#{empleadoManaged.direccion}" style="width:172px; text-align: left;"/>
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString8}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />                    
+                    <p:outputLabel value="Fecha nacimiento:" for="fechaNac" />
+                    <p:calendar id="fechaNac" value="#{empleadoManaged.fechaNacimiento}" locale="es" navigator="true" style="width:172px; text-align: left;" yearRange="c-70:c+0" pattern="dd/MM/yyyy"/>
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString10}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />                    
+                </p:panelGrid>
+                <p:panel  style="border:0px;">
+                    <p:commandButton value="Limpiar" actionListener="#{empleadoManaged.limpiar()}" oncomplete="PF('dlg').show()" update=":form:display, :form:fotoCrearEmpleado" style="font-size: 16px;"/>
+                    <p:commandButton value="Cancelar" actionListener="#{empleadoManaged.limpiar()}" onclick="PF('dlg').hide()" update="form" style="font-size: 16px;"/>
+                    <p:commandButton value="Guardar" actionListener="#{empleadoManaged.validar()}" onclick="PF('cargando').show()"  oncomplete="PF('cargando').hide(); PF('dlgMensajeCreacion').show();" icon="ui-icon-disk" style="font-size: 16px;"  update=":form"/>
+                </p:panel>
+            </p:dialog>
+            <!-- FIN CREACIÓN DE UN NUEVO EMPLEADO   -->
+
+            <script type="text/javascript">
+                if (#{empleadoManaged.completo}) {
+                    // showDialog();
+                    dlg.hide();
+                } else {
+                    dlg.show();
+                }
+            </script>
+
+            <p:dialog id="dlgEditarImagen" widgetVar="dlgEditarImagen" resizable="false" header="Editar imagen de perfil" showEffect="explode">
+                <div style="width: 160px; text-align: center; border: 0px;">
+                    <p:commandLink onclick="PF('dlgHacerFoto').show()" >
+                        <p:graphicImage value="..\imagenes\cam.png"  width="50" height="50" title="Hacer una foto."/>
+                    </p:commandLink>
+
+                    <p:commandLink onclick="subirImagen()">
+                        <p:graphicImage value="..\imagenes\subir.png"  width="50" height="50" title="Subir una foto."/>
+                    </p:commandLink>
+
+                    <p:commandLink onclick="PF('dlgEditarImagen').hide()">
+                        <p:graphicImage value="..\imagenes\cancelar.png"  width="50" height="50" title="Cancelar"/>
+                    </p:commandLink>
+                </div>
+            </p:dialog>
+
+            <p:dialog id="dlgHacerFoto" widgetVar="dlgHacerFoto" resizable="false" header="Editar imagen de perfil" showEffect="fade" hideEffect="explode">
+                <div style="width: auto; text-align: center; border: 0px;">
+                    <h:panelGrid columns="3" cellpadding="5">
+                        <p:photoCam widgetVar="pc" listener="#{empleadoManaged.capturarImagen}">
+                        </p:photoCam>
+                        <p:commandButton type="button" value="Capture" onclick="PF('pc').capture(), PF('dlgHacerFoto').hide()" >
+                            <p:ajax onstart="PF('dlgEditarImagen').hide()" />
+                            <p:ajax update=":form:fotoCrearEmpleado" />
+                            <p:ajax update=":form:fotoEditarEmpleado" />
+                        </p:commandButton>
+                    </h:panelGrid>
+                </div>
+            </p:dialog>
+
+            <p:dialog widgetVar="cargando" modal="true" resizable="false" header="Enviando clave..." showEffect="fade" closable="false">
+                <p:graphicImage id="img" value="../imagenes/loading.gif" style="width: 100px; height: 100px;" />
+            </p:dialog> 
+
+            <p:dialog widgetVar="dlgMensajeCreacion" modal="false" resizable="false" header="Resultado operación" showEffect="fade" closable="false">
+                <p:panel style="width: 400px;">
+                    <p:messages id="mensajeCreacion" autoUpdate="true"/>
+                    <p:commandButton value="Ok" icon="ui-icon-circle-check" actionListener="#{empleadoManaged.limpiar()}" onclick="PF('dlgMensajeCreacion').hide();" style="float: right;"/>
+                </p:panel>
+            </p:dialog> 
+
+        </h:form>
+    </h:body>
+</html>

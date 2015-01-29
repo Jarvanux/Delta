@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reportes" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4614ca9b-59bb-41a5-bb63-e7fa28d3e702">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="id_vehiculo" class="java.lang.Integer"/>
+	<parameter name="fecha_inicio" class="java.util.Date"/>
+	<parameter name="fecha_fin" class="java.util.Date"/>
+	<queryString>
+		<![CDATA[select curdate() , v.placa , pc.fecha_consignacion , pc.fecha_inicio, pc.fecha_fin ,pc.valor_consignacion , pc.numero_consig , c.nombre_convenio, a.nombre , a.apellido
+From (vehiculo v inner join pago_convenio pc on v.id_vehiculo = pc.id_vehiculo)
+inner join asociado a on a.id_asociado = v.id_asociado
+inner join convenio c on c.id_convenio = pc.id_convenio
+WHERE pc.id_vehiculo = $P{id_vehiculo} and
+pc.fecha_fin between $P{fecha_inicio} and  $P{fecha_fin}
+order by v.placa desc]]>
+	</queryString>
+	<field name="curdate()" class="java.sql.Date"/>
+	<field name="placa" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="fecha_consignacion" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="fecha_inicio" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="fecha_fin" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="valor_consignacion" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="numero_consig" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="nombre_convenio" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="nombre" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="apellido" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="total" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{valor_consignacion}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="81" splitType="Stretch">
+			<image>
+				<reportElement x="27" y="-3" width="143" height="82" uuid="dda1eef5-eab3-4e68-8a2b-03a91adb5d55"/>
+				<imageExpression><![CDATA["C:/Etoc/Opline-master/Opline/report/ETOC2.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="190" y="9" width="313" height="35" uuid="bfdd2cbe-303c-4302-b7f6-ff4ec8f4fdad"/>
+				<textElement>
+					<font size="18" isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[Reporte Pagos de Convenio]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="242" y="50" width="100" height="20" uuid="50ca2c12-0a45-4ed1-a439-109f9c78b542"/>
+				<textFieldExpression><![CDATA[$F{fecha_inicio}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="410" y="49" width="100" height="20" uuid="6e1aa090-d9b4-48f1-95ce-bbe5d30273a0"/>
+				<textFieldExpression><![CDATA[$F{fecha_fin}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="190" y="50" width="52" height="20" uuid="f4d90dfa-a2a6-46dc-b452-b6f0b5042f7b"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Desde]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="352" y="50" width="58" height="20" uuid="d94bc9fd-0756-4ee1-b85c-ae5774c60aa7"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hasta]]></text>
+			</staticText>
+			<line>
+				<reportElement x="27" y="69" width="515" height="1" uuid="18730c0a-a6ac-4262-8683-4d6aa70cd6c7"/>
+			</line>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="30" splitType="Stretch">
+			<textField>
+				<reportElement x="455" y="0" width="100" height="20" uuid="a2e0b1b4-0e5a-4c2c-9cc7-208cbc4c83df"/>
+				<textFieldExpression><![CDATA[$F{curdate()}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="27" y="0" width="100" height="20" uuid="56da0729-a7de-4b19-8681-7039006ccf16"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Propietario:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="109" y="0" width="138" height="20" uuid="fe2d1d05-bb41-4238-97ad-83154d63088f"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre} + $F{apellido}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="274" y="0" width="44" height="20" uuid="093961ae-ff34-48a6-9401-03eeb6c812d2"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Placa]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="318" y="0" width="100" height="20" uuid="aed97d37-9239-4011-8fd3-bd5d23a10a9b"/>
+				<textElement textAlignment="Center">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{placa}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch">
+			<staticText>
+				<reportElement x="20" y="9" width="100" height="26" uuid="f829814d-78b2-4a00-baff-8dab0d0e2e9f"/>
+				<textElement textAlignment="Center">
+					<font size="13" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Numero de consignacion]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="136" y="9" width="97" height="20" uuid="b32f622c-beec-43a1-b336-60f7941bec08"/>
+				<textElement textAlignment="Center">
+					<font size="13" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Desde]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="245" y="9" width="74" height="20" uuid="7d843872-2272-4202-abd1-e649b44f1c75"/>
+				<textElement textAlignment="Center">
+					<font size="13" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Hasta]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="342" y="9" width="83" height="20" uuid="31960228-ef16-4a7d-932e-79c31407791d"/>
+				<textElement textAlignment="Center">
+					<font size="13" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Convenio]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="442" y="9" width="100" height="20" uuid="30e31789-d0e1-4555-bfb6-4b3c9344f746"/>
+				<textElement textAlignment="Center">
+					<font size="13" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Valor]]></text>
+			</staticText>
+			<line>
+				<reportElement x="27" y="45" width="515" height="1" uuid="61455757-593b-4b96-8c11-08df29373080"/>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="31" splitType="Stretch">
+			<textField>
+				<reportElement x="20" y="0" width="100" height="20" uuid="8db10099-c684-4ab6-9095-c4a4448e4fe4"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{numero_consig}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="136" y="0" width="81" height="20" uuid="cb1505fd-f2c6-4f19-aa64-a0f8a86734ae"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{fecha_inicio}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="245" y="0" width="74" height="20" uuid="0945d3a8-6b29-46ef-a2f2-309a5c963eb5"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{fecha_fin}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="442" y="0" width="100" height="20" uuid="49f854e7-f403-42a4-8861-3b4c41a64992"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{valor_consignacion}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="342" y="0" width="83" height="20" uuid="f4a7780d-5ab8-4265-82ae-a3468a344325"/>
+				<textFieldExpression><![CDATA[$F{nombre_convenio}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="25" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="35" splitType="Stretch">
+			<line>
+				<reportElement x="27" y="11" width="515" height="1" uuid="e8a5cf54-c118-4eda-96ca-e578d905c49b"/>
+			</line>
+			<textField>
+				<reportElement x="462" y="15" width="26" height="20" uuid="758c8969-0dee-410c-bb19-3eee5c32546e"/>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="494" y="15" width="9" height="20" uuid="c4601e91-c04f-4f9e-87b8-6c0336502df5"/>
+				<text><![CDATA[/]]></text>
+			</staticText>
+			<textField evaluationTime="Report">
+				<reportElement x="510" y="15" width="19" height="20" uuid="0cd619f9-50bc-493f-952f-ad89248ce1ad"/>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="30" splitType="Stretch">
+			<rectangle>
+				<reportElement mode="Opaque" x="0" y="0" width="555" height="30" backcolor="#099D09" uuid="46bf1feb-9d8b-4f13-9297-442b5e49828f"/>
+			</rectangle>
+			<textField pattern="#,##0.00">
+				<reportElement x="455" y="10" width="100" height="20" uuid="67d8dedb-42bf-41dc-a272-d34c103ba1d5"/>
+				<textFieldExpression><![CDATA[$V{total}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="410" y="10" width="45" height="20" forecolor="#FEFEFE" uuid="49eaf86a-bb18-47e5-b452-773605ee4c98"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

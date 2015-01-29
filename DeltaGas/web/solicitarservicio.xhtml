@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p='http://primefaces.org/ui'
+
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Solicitar servicio</title>
+    </h:head>
+    <h:body>
+        <h:form id="form"> 
+            <p:dialog widgetVar="cargando" modal="true" resizable="false" header="Cargando..." showEffect="fade" closable="false">
+                <p:graphicImage id="img" value="../imagenes/loading.gif" style="width: 100px; height: 100px;" />
+            </p:dialog> 
+            <p:panel header="Entrada de producto" style="width: 500px; height: auto; margin: 0 auto;">
+                <p:messages autoUpdate="true" id="sms" closable="true"/>
+                <p:panelGrid id="displayservicio" columnClasses="label,value" columns="2" style="margin: 0 auto; width: 99%; max-width: 99%">
+                    <p:outputLabel value="Fecha solicitud:" />
+                    <p:outputLabel value="#{servicioTecnicoManaged.obtenerHoraDelSistema()}" ><f:convertDateTime parent="dd/MM/yyyy HH:mm:ss" /></p:outputLabel>
+                    <p:outputLabel value="Código de solicitud:" />
+                    <p:outputLabel value="#{servicioTecnicoManaged.obtenerIdSolicitud()}" />
+                    <p:outputLabel value="Estación de gas:" for="estacion" ></p:outputLabel>
+                    <p:selectOneMenu id="estacion" style="width: 95%;" value="#{servicioTecnicoManaged.idEstacion}">
+                        <f:selectItem itemLabel="Seleccione" itemValue="-1"></f:selectItem>                        
+                        <f:selectItems var="estacion" value="#{estacionManaged.lista}" 
+                                       itemLabel="#{estacion.nombre}" itemValue="#{estacion.idEstacion}"
+                                       />
+                    </p:selectOneMenu>
+                    <p:outputLabel value="Requerimiento:" for="requerimiento"/>
+                    <p:selectOneMenu id="requerimiento" style="width: 95%;" value="#{servicioTecnicoManaged.idRequerimiento}">
+                        <f:selectItem itemLabel="Seleccione" itemValue="-1"></f:selectItem>                        
+                        <f:selectItems var="items" value="#{requerimientoManaged.listaRequerimientos}" 
+                                       itemLabel="#{items.descripcion}" itemValue="#{items.idRequerimiento}"
+                                       />
+                    </p:selectOneMenu>
+                    <p:outputLabel value="Descripción:" for="descripcion"/>
+                    <!--<p:inputTextarea id="descripcion" placeholder="Descripción" rows="5" cols="23" counterTemplate="{0} characters remaining." autoResize="false" ></p:inputTextarea>-->
+                    <p:inputTextarea id="descripcion" value="#{servicioTecnicoManaged.descripcion}" style="width: 95%; max-width: 300px; max-height: 200px;" rows="3" autoResize="false" placeholder="Descripción del problema."/>                                        
+                </p:panelGrid>
+                <div id="botones" style="text-align: right; margin-top: 10px;">
+                    <p:commandButton value="Enviar" actionListener="#{servicioTecnicoManaged.enviarSolicitud()}" onclick="PF('cargando').show()" oncomplete="PF('cargando').hide(); PF('dlgMensajeCreacion').show()" update=":form" ajax="true"/>
+                    <p:commandButton value="Cancelar" actionListener="#{servicioTecnicoManaged.limpiarFormulario()}" update=":form:displayservicio"/>
+                </div>
+            </p:panel>
+        </h:form>
+    </h:body>
+</html>
+

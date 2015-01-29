@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      >
+    <h:head>
+        <title>Convenio</title>
+         <script src="js/traducirCalendario.js"></script>
+    </h:head>
+    <h:body>
+        <h:form id="form">
+            <p:growl id="mensaje2" autoUpdate="true" showSummary="false"  showDetail="true"/>            
+            <p:dataTable id="tabla" var="convenio" value="#{convenioManaged.listaConvenio}" widgetVar="tablaConvenio" style="font-family: calibri; width: 100%;"
+                         emptyMessage="No hay registros" filteredValue="#{convenioManaged.filtroConvenio}"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         paginator="true"
+                         rows="10"
+                         rowsPerPageTemplate="10,25,50,100"                         
+                         >
+                <f:facet name="header">               
+                    <p:outputPanel style="text-align: right" >                               
+                        <p:commandButton value="Crear Nuevo"  style="  margin-right: 10%;">                                                                       
+                            <p:ajax listener="#{convenioManaged.limpiar()}" update=":form" />                                                                                                    
+                            <p:ajax onstart="PF('dlgCrearConvenio').show()" /> 
+                        </p:commandButton>
+                        <p:inputText id="globalFilter" onkeyup="PF('tablaConvenio').filter()" style="width:150px; " placeholder="Buscar" />                        
+                    </p:outputPanel>                   
+                </f:facet>
+
+                <p:column headerText="Nombre convenio" filterBy="#{convenio.nombreConvenio}" filterStyle="display:none"  filterMatchMode="contains">                                            
+                    <h:outputText value="#{convenio.nombreConvenio}" />
+                </p:column>
+                <p:column headerText="Descripción convenio" filterBy="#{convenio.descripcion}" filterStyle="display:none"  filterMatchMode="contains">                    
+                    <h:outputText value="#{convenio.descripcion}" />
+                </p:column>                                             
+                <p:column headerText="fechaInicio" filterBy="#{convenio.fechaInicio}" filterStyle="display:none"  filterMatchMode="contains">                    
+                    <h:outputText value="#{convenio.fechaInicio}" ><f:convertDateTime pattern="dd/MM/YYYY" /></h:outputText>
+                </p:column>                                                             
+
+                <p:column headerText="Opciones" style="width:12%;">                                                            
+                    <p:commandButton style=" width: 25px; height: 25px; float: left;" icon="ui-icon-circle-plus" title="Detalles" > 
+                        <p:ajax onstart="PF('dlgDetallesConvenio').show()" />
+                        <p:ajax listener="#{convenioManaged.prepararEdicion(convenio)}" update=":form:displayDetallesConvenio" />                                                      
+                    </p:commandButton>    
+                    <p:commandButton style=" width: 25px; height: 25px; float: left;" icon="ui-icon-pencil" title="Editar" > 
+                        <p:ajax onstart="PF('dlgEditarConvenio').show()" />
+                        <p:ajax listener="#{convenioManaged.prepararEdicion(convenio)}" update=":form:displayEditarConvenio" />                                                      
+                    </p:commandButton>                     
+                </p:column>
+            </p:dataTable>   
+
+            <!-- Detalles -->
+            <p:dialog widgetVar="dlgDetallesConvenio" resizable="false" header="Detalles de convenio" showEffect="clip" hideEffect="explode">
+                <p:panelGrid id="displayDetallesConvenio" columns="2" columnClasses="label,value">
+                    <p:outputLabel for="nombre2" value="Nombre:" />
+                    <p:outputLabel id="nombre2" value="#{convenioManaged.convenio.nombreConvenio}" />
+                    <p:outputLabel for="descripcion2" value="Descripción:" />
+                    <p:inputTextarea id="descripcion2" value="#{convenioManaged.convenio.descripcion}" rows="5" cols="23" counterTemplate="{0} characters remaining." autoResize="false"></p:inputTextarea>
+                    <p:outputLabel for="fechaInicio2" value="Fecha Inicio:" />                    
+                    <p:outputLabel id="fechaInicio2" value="#{convenioManaged.convenio.fechaInicio}" ><f:convertDateTime pattern="dd/MM/YYYY" /></p:outputLabel>
+                    <p:outputLabel for="fechaFin2" value="Fecha Fin:" />                    
+                    <p:outputLabel id="fechaFin2" value="#{convenioManaged.convenio.fechaFin}" ><f:convertDateTime pattern="dd/MM/YYY" /></p:outputLabel>
+                    <p:outputLabel value="Número de vehiculos:" />
+                    <p:outputLabel value="#{convenioManaged.consultarNumeroVehiculos()}" />
+                </p:panelGrid>
+                <p:panel style="text-align: right; border: 0px; margin: 0px;">
+                    <p:commandButton type="button" value="Volver Atrás" onclick="PF('dlgDetallesConvenio').hide()"/>
+                </p:panel>
+            </p:dialog>
+            <!-- Fin Detalles -->
+
+            <!-- Editar -->
+            <p:dialog widgetVar="dlgEditarConvenio" resizable="false" header="Editar de convenio" showEffect="clip" hideEffect="explode">
+                <p:panelGrid id="displayEditarConvenio" columns="2" columnClasses="label,value">
+                    <p:outputLabel for="nombre3" value="Nombre:" />
+                    <p:inputText id="nombre3" value="#{convenioManaged.convenio.nombreConvenio}" style="width: 90%" />
+                    <p:outputLabel for="descripcion3" value="Descripción:" />
+                    <p:inputTextarea id="descripcion3" value="#{convenioManaged.convenio.descripcion}" rows="5" cols="23" counterTemplate="{0} characters remaining." autoResize="false"></p:inputTextarea>
+                    <p:outputLabel for="fechaInicio3" value="Fecha Inicio:" />                    
+                    <p:calendar locale="es" id="fechaInicio3" value="#{convenioManaged.convenio.fechaInicio}" navigator="true" disabled="false"/>
+                    <p:outputLabel for="fechaFin3" value="Fecha Fin:" />                    
+                    <p:calendar locale="es" id="fechaFin3" value="#{convenioManaged.convenio.fechaFin}" navigator="true"  disabled="false"/>
+                </p:panelGrid>
+                <p:panel style="text-align: right; border: 0px; margin: 0px;">
+                    <p:commandButton value="Guardar Cambios" action="#{convenioManaged.editar()}" oncomplete="PF('dlgEditarConvenio').hide()" update="form:tabla"/>
+                    <p:commandButton value="Cancelar" onclick="PF('dlgEditarConvenio').hide()"/>
+                </p:panel>
+            </p:dialog>
+            <!-- Fin Editar -->
+
+            <p:dialog widgetVar="dlgCrearConvenio" resizable="false" header="Crear Convenio" showEffect="fade" hideEffect="explode">
+                <p:panelGrid id="displayCrearConvenio" columns="3" columnClasses="label,value" >
+                    <p:outputLabel for="nombre" value="Nombre:"/>
+                    <p:inputText id="nombre" value="#{convenioManaged.nombreConvenio}" style="width: 90%"/>
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString1}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel for="descripcion" value="Descripción:" />
+                    <p:inputTextarea id="descripcion" value="#{convenioManaged.descripcion}" rows="5" cols="23" counterTemplate="{0} characters remaining." autoResize="false"></p:inputTextarea>
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString2}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel for="fechaInicio" value="Fecha Inicio:" />                    
+                    <p:calendar locale="es"  id="fechaInicio" value="#{convenioManaged.fechaInicio}" navigator="true"  disabled="false" style="width: 90%"/>
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenDate1}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel for="fechaFin" value="Fecha Fin:" />                    
+                    <p:calendar locale="es"  id="fechaFin" value="#{convenioManaged.fechaFin}" navigator="true"  disabled="false" style="width: 90%"/>
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenDate2}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                </p:panelGrid>
+                <p:panel style="text-align: center; margin: 0px;" >                                    
+                    <p:commandButton value="Limpiar" actionListener="#{convenioManaged.limpiar()}" oncomplete="PF('dlgCrearConvenio').show()" update=":form:displayCrearConvenio" />
+                    <p:commandButton value="Cancelar" actionListener="#{convenioManaged.limpiar()}" onclick="PF('dlgCrearConvenio').hide()" update="form" />                        
+                    <p:commandButton value="Guardar" actionListener="#{convenioManaged.validar()}"  icon="ui-icon-disk" style="font-size: 16px;" update=":form"/>
+                </p:panel>
+            </p:dialog>
+            
+            <script type="text/javascript">
+                if (#{convenioManaged.completo}) {
+                    // showDialog();
+                    dlgCrearConvenio.hide();
+                } else {
+                    dlgCrearConvenio.show();
+                }
+            </script>
+
+        </h:form>
+    </h:body>
+</html>

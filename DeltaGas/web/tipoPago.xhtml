@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui" 
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Tipo Pago</title>
+        <link type="text/css" rel="stylesheet"
+              href="theme.css" />
+    </h:head>
+    <h:body>
+        <h:form id="form">
+            <p:growl id="mensaje" showSummary="false"  showDetail="true"/>
+            <p:dataTable var="tipoPago" value="#{tipoPagoManaged.listaTipoPago}" widgetVar="tipoPagoTable"
+                         editable="true"  emptyMessage="No hay registros" filteredValue="#{tipoPagoManaged.filtroTipoPago}"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         paginator="true"
+                         rows="10"
+                         selectionMode="single"                              
+                         rowKey="#{tipoPago.idTipoPago}"
+                         rowsPerPageTemplate="10,25,50,100"                         
+                         >                         
+                <f:facet name="header">
+                    <p:commandButton value="Ir a Pagos" style="float: left;" action="#{tipoPagoManaged.irPagos()}" />                    
+                    <p:outputPanel style="text-align: right" >
+                        <p:commandButton value="Crear Nuevo"  style="  margin-right: 10%;">                                                                       
+                            <p:ajax listener="#{tipoPagoManaged.limpiar()}" update=":form" />                                                                                                    
+                            <p:ajax onstart="PF('dlg').show()" /> 
+                        </p:commandButton>                        
+                        <h:outputText value="Buscar" style="margin-right: 10px;"/>
+                        <p:inputText id="globalFilter" onkeyup="PF('tipoPagoTable').filter()" style="width:150px" placeholder="Ingrese criterio"/>
+                    </p:outputPanel>
+                </f:facet>
+                <p:ajax event="rowEdit" listener="#{tipoPagoManaged.onRowEdit}" update=":form:mensaje" />
+                <p:ajax event="rowEditCancel" listener="#{tipoPagoManaged.onRowCancel}" update=":form:mensaje" />
+                <p:column headerText="Tipo de pago" filterBy="#{tipoPago.nombrePago}" filterStyle="display:none"  filterMatchMode="contains">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{tipoPago.nombrePago}" /></f:facet>
+                        <f:facet name="input"><p:inputText id="nombreInput" value="#{tipoPago.nombrePago}" style="width:100%"/></f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="Editar" style="width:32px">
+                    <p:rowEditor />                    
+                </p:column>
+                <p:column headerText="Eliminar" style="width: 32px; text-align: center;">
+                    <p:commandButton style="width: 25px; height: 25px; float: left;" icon="ui-icon-circle-close" title="Eliminar" > 
+                        <p:ajax listener="#{tipoPagoManaged.prepareEliminar(tipoPago)}" update=":form" />   
+                        <p:ajax onstart="PF('dlgDeshabilitar').show()" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+
+            <!-- CREACIÓN DE NUEVO TIPO PAGO -->
+            <p:dialog widgetVar="dlg" modal="true" resizable="false" header="Crear Nuevo Tipo de Pago" showEffect="fade"> 
+                <p:panel id="display" >                                                            
+                    <p:outputLabel for="nombre" value="Descripción:" style="margin-right: 10px;" />
+                    <p:inputText id="nombre" value="#{tipoPagoManaged.nombre}" style="width:172px; text-align: left;"/>                    
+                    <p:commandButton icon="ui-icon-close" actionListener="#{tipoPagoManaged.limpiar()}" oncomplete="PF('dlg').show()" update=":form:display" style="width: 25px; height: 35px;" title="Limpiar"/>
+                </p:panel>
+                <p:panel  style="border:0px; text-align: right;">                    
+                    <p:commandButton value="Cancelar" actionListener="#{tipoPagoManaged.limpiar()}" onclick="PF('dlg').hide()" update="form" />
+                    <p:commandButton value="Guardar" actionListener="#{tipoPagoManaged.guardar()}" oncomplete="PF('dlg').hide()" update="form" />                     
+                </p:panel>
+            </p:dialog> 
+            <!-- FIN CREACIÓN DE TIPO PAGO -->
+            <!-- CONFIRMACIÓN ELIMINAR -->
+            <p:dialog widgetVar="dlgDeshabilitar" modal="true" resizable="false" header="Confirmación" showEffect="fade">
+                <div style="width: 300px; text-align: center; border: 0px;">
+                    <div style="width: 300px; text-align: center; border: 0px;">
+                        <p:outputLabel value="El registro se eliminará de forma permantente ¿Está seguro de realizar este cambio?" />                   
+                    </div>
+                    <br></br>
+                    <p:commandButton value="Si" action="#{tipoPagoManaged.eliminar()}"  onclick="PF('dlgDeshabilitar').hide()" icon="ui-icon-check" update=":form" />
+                    <p:commandButton value="No" onclick="PF('dlgDeshabilitar').hide()" icon="ui-icon-close" />                                      
+                </div>
+            </p:dialog>
+            <!-- FIN CONFIRMACIÓN -->
+        </h:form>
+    </h:body>
+</html>

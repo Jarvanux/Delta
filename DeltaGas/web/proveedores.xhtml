@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html" 
+      xmlns:p="http://primefaces.org/ui"
+
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Proveedores</title>
+    </h:head>
+    <h:body>
+        <h:form id="form">
+            <p:growl id="sms" autoUpdate="true"/>
+            <!--DISPLAY CARGANDO...-->
+            <p:dialog widgetVar="cargando" modal="true" resizable="false" header="Cargando..." showEffect="fade" closable="false">
+                <p:graphicImage id="img" value="../imagenes/loading.gif" style="width: 100px; height: 100px;" />
+            </p:dialog> 
+            <!--FIN DISPLAY CARGANDO...-->
+            
+            
+            <!-- Detalles del proveedor -->
+            <p:dialog widgetVar="dlgDetalles" modal="false" resizable="false" header="Detalles de producto" showEffect="fade"> 
+                <p:panelGrid id="displayDetalles" columnClasses="label,label" columns="2">
+                    <p:outputLabel value="Nit:" />
+                    <p:outputLabel value="#{proveedoresManaged.proveedor.documento}" />
+                    <p:outputLabel value="Nombre:" />
+                    <p:outputLabel value="#{proveedoresManaged.proveedor.nombres}" />
+                    <p:outputLabel value="Apellido:" />
+                    <p:outputLabel value="#{proveedoresManaged.proveedor.apellidos}" />
+                    <p:outputLabel value="Teléfono:" />
+                    <p:outputLabel value="#{proveedoresManaged.proveedor.telefono}" />
+                    <p:outputLabel value="Celular:" />
+                    <p:outputLabel value="#{proveedoresManaged.proveedor.celular}" />
+                    <p:outputLabel value="Correo:" />
+                    <p:outputLabel value="#{proveedoresManaged.proveedor.correo}" />
+                    <p:outputLabel value="Dirección:" />
+                    <p:outputLabel value="#{proveedoresManaged.proveedor.direccion}" />
+                    <p:outputLabel value="Documento:" />
+                    <p:outputLabel value="#{proveedoresManaged.proveedor.documento}" />
+                    <p:outputLabel value="Fecha Registro:" />
+                    <p:outputLabel value="#{proveedoresManaged.proveedor.fechaRegistro}" ><f:convertDateTime pattern="dd/MM/yyyy" /></p:outputLabel>
+                </p:panelGrid>
+                <div id="botones" style="margin:0 auto; width: 95%; text-align: right;">
+                    <p:commandButton value="Ok" onclick="PF('dlgDetalles').hide()"/>
+                </div>
+            </p:dialog> 
+            <!-- Fin detalles del proveedor --> 
+            
+            <!--CREAR PROVEEDOR-->             
+            <p:dialog id="dlgDetallesId" widgetVar="dlgCrear" resizable="false" header="Registro de proveedor" showEffect="explode">
+                <p:panelGrid id="displayCrear"  columnClasses="label,label" columns="2" >
+                    <p:outputLabel value="Nit:" for="documento" />                 
+                    <p:inputText value="#{proveedoresManaged.documento}" id="documento" style="width:172px; text-align: left;" />
+                    <p:outputLabel value="Nombres:" for="nombres"/>
+                    <p:inputText value="#{proveedoresManaged.nombres}" id="nombres" style="width:172px; text-align: left;" />
+                    <p:outputLabel value="Apellidos:" for="apellidos"/>
+                    <p:inputText value="#{proveedoresManaged.apellidos}" id="apellidos" style="width:172px; text-align: left;" />
+                    <p:outputLabel value="Correo:" for="correo"/>
+                    <p:inputText value="#{proveedoresManaged.correo}" id="correo" style="width:172px; text-align: left;" />
+                    <p:outputLabel value="Teléfono" for="telefono"/>
+                    <p:inputMask value="#{proveedoresManaged.telefono}" id="telefono" mask="999-9999? x99999" style="width:172px; text-align: left;" />
+                    <p:outputLabel value="Celular" for="celular"/>
+                    <p:inputMask value="#{proveedoresManaged.celular}" id="celular" mask="(999) 999-9999" style="width:172px; text-align: left;"/>
+                    <p:outputLabel value="Dirección:" for="direccion"/>
+                    <p:inputText value="#{proveedoresManaged.direccion}" id="direccion" style="width:172px; text-align: left;" />
+                </p:panelGrid>
+                <div id="botones" style="text-align: right; margin-top: 10px;">                    
+                    <p:commandButton value="Registrar" actionListener="#{proveedoresManaged.guardar()}" onclick="PF('cargando').show()" oncomplete="PF('cargando').hide()" title="Registrar proveedor" update=":form" />
+                    <p:commandButton value="Cancelar" title="Cancelar registro"  onclick="PF('dlgCrear').hide()" />
+                </div>
+            </p:dialog>
+            <!--FIN CREAR PROVEEDOR-->
+
+            <!--INICIO TABLA-->
+            <p:dataTable id="tabla" var="proveedor" value="#{proveedoresManaged.lista}"
+                         widgetVar="tablaProveedor"
+                         emptyMessage="No hay registros" filteredValue="#{proveedoresManaged.listaFiltro}"
+                         style="font-family: sans-serif; width: 100%;"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         paginator="true"
+                         rows='10'
+                         selectionMode="single"
+                         rowKey="#{proveedor.idProveedor}"
+                         rowsPerPageTemplate="10,20,30,40,50,60,70,80,90,100"
+                         >
+                <f:facet name="header">
+                    <p:outputPanel style="text-align: right">
+                        <p:commandButton value="Nuevo Proveedor" style="margin-right: 10%">
+                            <p:ajax listener="#{proveedoresManaged.limpiarFormulario()}" update=":form" />
+                            <p:ajax onstart="PF('dlgCrear').show()" />
+                        </p:commandButton>
+                        <p:inputText id="globalFilter" onkeyup="PF('tablaProveedor').filter()" style="width: 150px;" placeholder="Buscar" />                        
+                    </p:outputPanel>
+                </f:facet>                
+                <p:column headerText="Nit" filterBy="#{proveedor.documento}" filterStyle="display:none" filterMatchMode="contains">
+                    <h:outputText value="#{proveedor.documento}" />
+                </p:column>
+                <p:column headerText="Nombre" filterBy="#{proveedor.nombres} #{proveedor.apellidos}" filterStyle="display:none" filterMatchMode="contains">
+                    <h:outputText value="#{proveedor.nombres} #{proveedor.apellidos}" />
+                </p:column>                                
+                <p:column headerText="Teléfono" filterBy="#{proveedor.telefono}" filterStyle="display:none" filterMatchMode="contains">
+                    <h:outputText value="#{proveedor.telefono}" ></h:outputText>
+                </p:column>                                
+                <p:column headerText="Teléfono" filterBy="#{proveedor.celular}" filterStyle="display:none" filterMatchMode="contains">
+                    <h:outputText value="#{proveedor.celular}" ></h:outputText>
+                </p:column>                                
+                <p:column headerText="Correo" filterBy="#{proveedor.correo}" filterStyle="display:none" filterMatchMode="contains">
+                    <h:outputText value="#{proveedor.correo}" />
+                </p:column>
+                <p:column headerText="Fecha registro" sortBy="#{proveedor.fechaRegistro}">
+                    <p:outputLabel value="#{proveedor.fechaRegistro}" ><f:convertDateTime pattern="dd/MM/yyyy" /></p:outputLabel>
+                </p:column>                               
+                <p:column headerText="Opcciones" >                    
+                    <p:commandButton style=" width: 25px; height: 25px; float: left;" icon="ui-icon-circle-plus" title="Detalles" >
+                        <p:ajax oncomplete="PF('dlgDetalles').show()" />
+                        <p:ajax listener="#{proveedoresManaged.detalles(proveedor)}" />
+                        <p:ajax update=":form:displayDetalles" />
+                    </p:commandButton>
+                    <!--                    <p:commandButton style=" width: 25px; height: 25px; float: left;" icon="ui-icon-close" title="Eliminar" >
+                                            <f:setPropertyActionListener value="#/{almacen}" target="#/{almacenManaged.producto}" />
+                                            <p:ajax listener="#/{almacenManaged.eliminar(almacen)}" update=":form"/>
+                                        </p:commandButton>-->                    
+                </p:column>
+            </p:dataTable>
+            <!--FIN TABLA-->
+        </h:form>
+    </h:body>
+</html>
+

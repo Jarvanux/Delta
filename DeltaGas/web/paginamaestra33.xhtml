@@ -1,0 +1,154 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      >
+    <f:view encoding="utf-8"  contentType="text/html">
+        <h:head>
+            <f:facet name="first">
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+                <link href="imagenes/favicon.png" rel="icon" type="image/x-icon" />        
+
+                <script type="text/javascript">
+                    function subirImagen() {
+                        dlgSubirFoto.show();
+                    }
+                    function editarImagen() {
+                        dlgEditarImagen.show();
+                    }
+                </script>
+                <script src="js/jQuery.js"></script>
+                <script src="js/traducirCalendario.js"></script>
+
+                <meta charset='utf-8' />
+                <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+                <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+                <title>DeltaGas</title>                  
+                <link rel="stylesheet" type="text/css" href="css/estilosPaginaMaestra.css" />
+
+                <script type="text/javascript">
+
+                    function cargarPagina(url) {
+                        //$('div#divLoader').slideDown('fast');
+                        $('#divLoader2').hide();
+                        $("#contenido")
+                                .html('')
+                                .append($('#divLoader2').clone().show());
+                        $.post(url, function(data) {
+                            $("#contenido").html(data);
+                        });
+                    }
+                </script>                                 
+
+                <script type="text/javascript">
+                    function cargarImagen() {
+                        PF('dlgSubirFoto').show();
+                    }
+                </script>
+            </f:facet>
+        </h:head>
+        <h:body onload="cargarPagina('aplicarEstilos.xhtml')">
+            <h:form enctype="multipart/form-data">
+                <header class="header1">
+                    <div>
+                        <nav class="nav1">
+                            <div class="div1">
+                                <a href="paginamaestra.xhtml" class="linkOpline" >
+                                    <img id="logoOpline" src="imagenes/logoOpline.png" />
+                                    <span id="tituloOpline">
+                                        Sistema de administración de información
+                                    </span>
+                                </a>
+                                <div id="controles">
+                                    <p:outputLabel value="Usuario: "  style="font-weight: bold; color: #98C466; font-size: 14px;"/><p:outputLabel style="font-size: 14px; color: #959595;" value="#{principalManagedBean.datosPrincipal.idRol.nombre} - #{principalManagedBean.datosPrincipal.apellido}" />
+                                    <div id="btnCerrarSesion">                                                                                    
+                                        <p:commandLink id="ajax" style="color: #444444; font-size: 14px;" actionListener="#{principalManagedBean.cerrarSesion()}">
+                                            <h:outputText value="Cerrar Sesion" style="text-decoration: none;"/>
+                                        </p:commandLink>                                   
+                                    </div>
+                                </div>
+                            </div>                        
+                        </nav>
+                    </div>
+                </header>                
+
+                <main role="main" class="paginaMaestra" >
+                    <section class="cuerpoContenedor">                    
+                        <div id="menus">  
+                            <p:menubar>            
+                                <p:submenu label="Operaciones" icon="ui-icon-home">
+                                    <p:menuitem value="Ordenes de servicio" url="#" onclick="cargarPagina('aplicarEstilos.xhtml')" />
+                                    <p:menuitem value="Estadisticas" url="#" onclick="cargarPagina('aplicarEstilos.xhtml')" />
+                                    <p:menuitem value="Seguimiento de estaciones" url="#" onclick="cargarPagina('aplicarEstilos.xhtml')" />
+                                    <p:menuitem value="% de alistamiento" url="#" onclick="cargarPagina('aplicarEstilos.xhtml')" />
+                                    <p:menuitem value="Mantenimientos realizados" url="#" onclick="cargarPagina('aplicarEstilos.xhtml')" />
+                                    <p:menuitem value="Descarga de docuementos" url="#" onclick="cargarPagina('aplicarEstilos.xhtml')" />                                                                    
+                                </p:submenu>
+                                <p:submenu label="Recursos humanos">                                    
+                                </p:submenu>
+                                <p:submenu label="Almacen">
+                                    <p:menuitem value="Ingreso de elementos" ></p:menuitem>
+                                    <p:menuitem value="Salida de elementos" ></p:menuitem>
+                                    <p:menuitem value="Gestión proveedores" ></p:menuitem>                                   
+                                </p:submenu>
+                                <p:submenu label="Operadores en sitio">
+                                </p:submenu>
+                                <p:submenu label="Clientes">
+                                    <p:menuitem value="Información de mi estáción" ></p:menuitem>
+                                    <p:menuitem value="Solicitar servicio técnico" ></p:menuitem>
+                                    <p:menuitem value="Compra de equipos y suministros" ></p:menuitem>
+                                    <p:menuitem value="Facturación y pagos" ></p:menuitem>
+                                </p:submenu>
+                                <p:submenu label="Mis opciones" icon="ui-icon-star">                    
+                                    <c:forEach var="menu" items="#{principalManagedBean.listaMenu}">                                              
+                                        <p:submenu label="#{menu.nombre}" >                                                
+                                            <c:forEach var="opcion" items="#{menu.opcionList}">                                                                                
+                                                <p:menuitem value="#{opcion.nombre}" url="#" update="rutaActual" onclick="cargarPagina('#{opcion.url}')" />
+                                            </c:forEach>                                    
+                                        </p:submenu>                                    
+                                    </c:forEach>		                                                       
+                                </p:submenu>                                          
+                                <p:submenu label="Ventas" icon="ui-icon-gear">                                    
+                                </p:submenu>                          
+                                <p:submenu label="Facturación" icon="ui-icon-gear">                                    
+                                </p:submenu>                          
+                                <p:submenu label="Configuración" icon="ui-icon-gear">                                    
+                                </p:submenu>                          
+                            </p:menubar>                              
+                        </div>                                                
+                        <div id="contenido"></div>
+
+                    </section>
+                </main>
+                <footer class="piePagina">
+                    <aside>
+                        <div class="extra">
+                            <div id="contentExtra">
+                                <h2>Síguenos:</h2>                
+                                <div id="redesSociales">
+                                    <a href="#{loginManaged.informacion.facebook}" target="_blank"><img src="imagenes/facebook.png" /></a>
+                                    <a href="#{loginManaged.informacion.twitter}" target="_blank" ><img src="imagenes/twitter.png" /></a>
+                                    <a href="#{loginManaged.informacion.in}" target="_blank"><img src="imagenes/linkedin.png" /></a>
+                                    <a href="#{loginManaged.informacion.google}" target="_blank"><img src="imagenes/google-plus.png" /></a>
+                                </div>                                    
+                            </div>
+                        </div>                
+                    </aside>                
+                </footer>                    
+
+                <div id="divLoader2">                    
+                    <img src="imagenes/loading.gif" /></div>
+                <link rel="stylesheet" type="text/css" href="css/theme0.css" />
+
+
+            </h:form>
+        </h:body>
+    </f:view>
+</html>
+

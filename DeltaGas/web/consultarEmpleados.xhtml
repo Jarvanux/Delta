@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui" 
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>                
+        <script type="text/javascript">
+            function subirImagen() {
+                dlgSubirFoto.show();
+            }
+        </script>
+    </h:head>
+    <h:body>      
+        <p:growl id="mensaje2" autoUpdate="false" showSummary="false"  showDetail="true" />           
+        <h:form id="form" >    
+            <!--            <div style="width: 100%; text-align: center;">
+                            <p:outputLabel value="Gestión empleados" style="font-weight: bold; text-align: center; color: #e78f08; font-size: 18px;"/>
+                        </div>-->
+            <p:dataTable id="tabla" var="empleado" value="#{empleadoManaged.listaEmpleado}" widgetVar="empleadoTable" style="margin-bottom:20px; font-family: calibri; width: 100%;"
+                         emptyMessage="No hay registros" filteredValue="#{empleadoManaged.filtroEmpleado}"                         
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         paginator="true"
+                         rows="10"
+                         selectionMode="single"                              
+                         rowKey="#{empleado.idEmpleado}"
+                         rowsPerPageTemplate="10,25,50,100"                         
+                         >                             
+                <f:facet name="header">
+                    <p:outputPanel style="text-align: right; font-family: calibri;" >                                      
+                        <p:selectOneRadio id="listarPor"  columns="4" value="#{empleadoManaged.listarPor}" style=" width: 300px; float: left;"  >
+                            <f:selectItem itemLabel="Activos" itemValue="Activos" />
+                            <f:selectItem itemLabel="Deshabilitados" itemValue="Dehabilitados" />                              
+                            <p:ajax listener="#{empleadoManaged.listarPorPreferencia()}" update=":form:tabla"  onstart="PF('empleadoTable').filter()"/>
+                        </p:selectOneRadio>                                                               
+                        <p:inputText id="globalFilter" onkeyup="PF('empleadoTable').filter()" style="width:150px; " placeholder="Buscar" />                        
+                    </p:outputPanel>                   
+                </f:facet>
+
+
+                <p:column headerText="Rol" filterBy="#{empleado.idRol.nombre}" filterStyle="display:none"  filterMatchMode="contains">                    
+                    <h:outputText value="#{empleado.idRol.nombre}" />
+                </p:column>
+                <p:column headerText="Cedula" filterBy="#{empleado.cedula}" filterStyle="display:none"  filterMatchMode="contains">                    
+                    <h:outputText value="#{empleado.cedula}" />
+                </p:column>                
+                <p:column headerText="Asociado" filterBy="#{empleado.nombre} #{empleado.apellido}" filterStyle="display:none"  filterMatchMode="contains">                    
+                    <h:outputText value="#{empleado.nombre} #{empleado.apellido}" />                                            
+                </p:column>                                
+                <p:column headerText="Celular" filterBy="#{empleado.celular}" filterStyle="display:none"  filterMatchMode="contains">                    
+                    <h:outputText value="#{empleado.celular}" style="width:100%" />
+                </p:column>               
+                <p:column headerText="Teléfono" filterBy="#{empleado.telefono}" filterStyle="display:none"  filterMatchMode="contains">                    
+                    <h:outputText value="#{empleado.telefono}" style="width:180%" />
+                </p:column>     
+                <p:column headerText="Correo" filterBy="#{empleado.correo}" filterStyle="display:none"  filterMatchMode="contains">                
+                    <h:outputText value="#{empleado.correo}" style="width:100%" />
+                </p:column>                                
+                <p:column headerText="Opciones" style="width:12%;">                                                            
+                    <p:commandButton style=" width: 25px; height: 25px; float: left;" icon="ui-icon-circle-plus" title="Detalles" > 
+                        <p:ajax onstart="PF('dlg2').show()" />
+                        <p:ajax listener="#{empleadoManaged.prepararEdicion(empleado)}" update=":form:display2, :form:fotoDetallesEmpledo" />                                                      
+                    </p:commandButton>                                           
+                </p:column>
+
+            </p:dataTable>   
+
+
+            <!-- DETALLES -->
+            <p:dialog widgetVar="dlg2" id="dlg2" resizable="false" header="Detalles empleado" showEffect="clip">                                                     
+                <div style="float: left; border: 1px solid #A6C9E2; padding: 2px; text-align: center;">
+                    <p:graphicImage id="fotoDetallesEmpledo" value="#{empleadoManaged.datos.foto}" width="150" height="150" style="display: block;"/>                                            
+                </div>   
+                <p:panelGrid id="display2" columns="2" columnClasses="label,value">                                                                                                   
+                    <h:outputLabel value="Rol asignado:" for="roles2" style="font-weight: bold;"/>                    
+                    <p:outputLabel id="roles2" value="#{empleadoManaged.datos.idRol.nombre}"/>
+                    <p:outputLabel for="nombre2" value="Nombre:" style="font-weight: bold;"/>
+                    <p:outputLabel id="nombre2" value="#{empleadoManaged.datos.nombre}"  style="width:172px; text-align: left;" />
+                    <p:outputLabel for="apellidos2" value="Apellidos:" style="font-weight: bold;"/>
+                    <p:outputLabel id="apellidos2" value="#{empleadoManaged.datos.apellido}" style="width:172px; text-align: left;" />
+                    <p:outputLabel for="cedula2" value="Cedula:" style="font-weight: bold;"/>
+                    <p:outputLabel id="cedula2" value="#{empleadoManaged.datos.cedula}" style="width:172px; text-align: left;"/>
+                    <p:outputLabel for="expedida2" value="Expedida:" style="font-weight: bold;"/>
+                    <p:outputLabel id="expedida2" value="#{empleadoManaged.datos.expedida}" style="width:172px; text-align: left;"/>                                
+                    <p:outputLabel for="celular2" value="Celular:" style="font-weight: bold;"/>
+                    <p:outputLabel id="celular2" value="#{empleadoManaged.datos.celular}"  style="width:172px; text-align: left;"/>
+                    <p:outputLabel for="telefono2" value="Teléfono:" style="font-weight: bold;"/>
+                    <p:outputLabel id="telefono2" value="#{empleadoManaged.datos.telefono}"  style="width:172px; text-align: left;"/> 
+                    <p:outputLabel for="correo2" value="Correo:" style="font-weight: bold;"/>
+                    <p:outputLabel id="correo2" value="#{empleadoManaged.datos.correo}" style="width:172px; text-align: left;"/>
+                    <p:outputLabel for="direccion2" value="Dirección:" style="font-weight: bold;"/>
+                    <p:outputLabel id="direccion2" value="#{empleadoManaged.datos.direccion}" style="width:172px; text-align: left;"/>                                         
+                </p:panelGrid>
+                <p:panel  style="border:0px; text-align: right;">                        
+                    <p:commandButton value="Volver atrás" oncomplete="PF('dlg2').hide()" />                     
+                </p:panel>
+            </p:dialog> 
+            <!-- FIN DETALLES -->             
+
+        </h:form>
+
+
+    </h:body>
+</html>

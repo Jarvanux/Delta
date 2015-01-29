@@ -1,0 +1,213 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      >
+    <h:head>
+        <title>Facelet Title</title>
+    </h:head>
+    <h:body>
+        <h:form id="form">
+            <p:growl autoUpdate="true" showDetail="true" showSummary="false" />
+            <p:dataTable id="tablaConductores" value="#{conductoresManaged.listaConductores}" var="conductor"
+                         filteredValue="#{conductoresManaged.filtroConductores}" widgetVar="conductorWidgetVar"
+                         emptyMessage="No hay registros"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         paginator="true"
+                         rows="10"
+                         rowsPerPageTemplate="10,25,50,100">
+                <f:facet name="header"  >
+                    <p:outputPanel>    
+                        <p:inputText id="globalFilter" onkeyup="PF('conductorWidgetVar').filter()" style="width:150px; float: right; margin-right: 30px;" placeholder="Buscar..." />
+                    </p:outputPanel>
+                </f:facet>
+
+                <p:column headerText="NIC" filterBy="#{conductor.nic}" filterStyle="display: none" >
+                    <h:outputText value="#{conductor.nic}" />
+                </p:column>
+
+                <p:column headerText="Nombre" filterBy="#{conductor.nombre}" filterStyle="display: none" >
+                    <h:outputText value="#{conductor.nombre}" />
+                </p:column>
+
+                <p:column headerText="Apellido" filterBy="#{conductor.apellido}" filterStyle="display: none" >
+                    <h:outputText value="#{conductor.apellido}" />
+                </p:column>
+
+                <p:column headerText="Fecha de Nacimiento" filterBy="#{conductor.fechaNacimiento}" filterStyle="display: none" >
+                    <h:outputText value="#{conductor.fechaNacimiento}" >
+                        <f:convertDateTime pattern="yyyy-MM-dd" locale="ES"/>
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="Cédula" filterBy="#{conductor.cedula}" filterStyle="display: none" >
+                    <h:outputText value="#{conductor.cedula}" />
+                </p:column>
+
+                <p:column headerText="Expedida" filterBy="#{conductor.expedida}" filterStyle="display: none" >
+                    <h:outputText value="#{conductor.expedida}" />
+                </p:column>
+
+                <p:column headerText="Celular" filterBy="#{conductor.celular}" filterStyle="display: none" >
+                    <h:outputText value="#{conductor.celular}" />
+                </p:column>
+
+                <p:column headerText="Correo electrónico" filterBy="#{conductor.correo}" filterStyle="display: none" >
+                    <h:outputText value="#{conductor.correo}" />
+                </p:column>
+
+                <p:column headerText="Opciones" >
+                    <p:commandButton value="Detalles" update=":form:conductorDetalle" title="Ver detalles" icon="ui-icon-search" onclick="PF('detallesDialogConductor').show()" style=" width: 25px; height: 25px; float: left;" >
+                        <f:setPropertyActionListener value="#{conductor}" target="#{conductoresManaged.conductorSelecionado}" />
+                    </p:commandButton>
+
+                    <p:commandButton oncomplete="PF('editarDialogConductor').show()" icon="ui-icon-pencil" title="Actualizar" style=" width: 25px; height: 25px; float: left;">
+                        <p:ajax listener="#{conductoresManaged.prepararEditar(conductor)}"  update=":form:editarConductor"/>
+                    </p:commandButton>
+
+                </p:column>
+                <f:facet name="footer" >
+                    <p:commandButton value="ver Asociados" onclick="cargarPagina('asociado.xhtml')" />
+                </f:facet>
+            </p:dataTable>
+
+            <!-- ver Detalles -->
+            <p:dialog widgetVar="detallesDialogConductor" resizable="false" header="Detalles Conductor" showEffect="clip" >
+                <p:outputPanel id="conductorDetalle" style="text-align: center;"  >
+                    <p:panelGrid columns="2"  rendered="#{not empty conductoresManaged.conductorSelecionado}">
+
+                        <p:outputLabel  value="nic4" style="font-weight: bold" />
+                        <h:outputText  id="nic4" value="#{conductoresManaged.conductorSelecionado.nic}" />
+
+                        <p:outputLabel for="nombreC" value="Nombre" style="font-weight: bold" />
+                        <h:outputText id="nombreC" value="#{conductoresManaged.conductorSelecionado.nombre}" />
+
+                        <p:outputLabel for="apellidoC" value="Apellido" style="font-weight: bold" />
+                        <h:outputText id="apellidoC" value="#{conductoresManaged.conductorSelecionado.apellido}" />
+
+                        <p:outputLabel for="fechaNacimientoC" value="Fecha de Nacimiento" style="font-weight: bold" />
+                        <h:outputText id="fechaNacimientoC" value="#{conductoresManaged.conductorSelecionado.fechaNacimiento}" >
+                            <f:convertDateTime pattern="yyyy-MM-dd" />
+                        </h:outputText>
+
+                        <p:outputLabel for="cedulaC" value="Cédula" style="font-weight: bold" />
+                        <h:outputText id="cedulaC" value="#{conductoresManaged.conductorSelecionado.cedula}" />
+
+                        <p:outputLabel for="expedidaC" value="Expedida" style="font-weight: bold" />
+                        <h:outputText id="expedidaC" value="#{conductoresManaged.conductorSelecionado.expedida}" />
+
+                        <p:outputLabel for="celularC" value="Celular" style="font-weight: bold" />
+                        <h:outputText id="celularC" value="#{conductoresManaged.conductorSelecionado.celular}" />
+
+                        <p:outputLabel for="telefonoC" value="Teléfono" style="font-weight: bold" />
+                        <h:outputText id="telefonoC" value="#{conductoresManaged.conductorSelecionado.telefono}" />
+
+                        <p:outputLabel for="barrioC" value="Barrio" style="font-weight: bold" />
+                        <h:outputText id="barrioC" value="#{conductoresManaged.conductorSelecionado.barrio}" />
+
+                        <p:outputLabel for="arpC" value="ARP" style="font-weight: bold" />
+                        <h:outputText id="arpC" value="#{conductoresManaged.conductorSelecionado.arp}" />
+
+                        <p:outputLabel for="epsC" value="EPS" style="font-weight: bold" />
+                        <h:outputText id="epsC" value="#{conductoresManaged.conductorSelecionado.eps}" />
+
+                        <p:outputLabel for="GrupoSangineoC" value="Grupo Sangíneo" style="font-weight: bold" />
+                        <h:outputText id="GrupoSangineoC" value="#{conductoresManaged.conductorSelecionado.grupoSangineo}" />
+
+                        <p:outputLabel for="generoC" value="Genero" style="font-weight: bold" />
+                        <h:outputText id="generoC" value="#{conductoresManaged.conductorSelecionado.genero}" />
+
+                        <p:outputLabel for="estadoCivilC" value="Estado Civil" style="font-weight: bold" />
+                        <h:outputText id="estadoCivilC" value="#{conductoresManaged.conductorSelecionado.estadoCivil}" />
+
+                        <p:outputLabel for="numHijosC" value="Número de Hijos" style="font-weight: bold" />
+                        <h:outputText id="numHijosC" value="#{conductoresManaged.conductorSelecionado.numHijos}" />
+
+
+                    </p:panelGrid> 
+                </p:outputPanel>
+            </p:dialog>
+            <!-- ver Detalles -->
+
+            <!-- Editar -->
+            <p:dialog widgetVar="editarDialogConductor" resizable="false" header="Detalles Conductor" showEffect="clip" >
+                <p:outputPanel id="editarConductor" style="text-align: center;"  >
+
+                    <p:panelGrid columns="3" >
+
+                        <p:outputLabel  value="NIC" style="font-weight: bold" />
+                        <p:inputText  id="NIC" value="#{conductoresManaged.conductorSelecionado2.nic}" validatorMessage="Campo NIC Requerido"/>
+                        <p:message for="NIC" display="icon" />
+
+                        <p:outputLabel for="nombreC2" value="Nombre" style="font-weight: bold" />
+                        <p:inputText id="nombreC2" value="#{conductoresManaged.conductorSelecionado2.nombre}"  validatorMessage="Nombre requerido"/>
+                        <p:message for="nombreC2" display="icon" />
+
+                        <p:outputLabel for="apellidoC2" value="Apellido" style="font-weight: bold" />
+                        <p:inputText id="apellidoC2" value="#{conductoresManaged.conductorSelecionado2.apellido}" validatorMessage="Apellido requerido"/>
+                        <p:message for="apellidoC2" display="icon" />
+
+                        <p:outputLabel for="fechaNacimientoC2" value="Fecha de Nacimiento" style="font-weight: bold" />
+                        <p:calendar id="fechaNacimientoC2" value="#{conductoresManaged.conductorSelecionado2.fechaNacimiento}" pattern="yyyy-MM-dd" validatorMessage="Fecha de Nacimiento requerida"/>
+                        <p:message for="fechaNacimientoC2" display="icon" />
+
+                        <p:outputLabel for="cedulaC2" value="Cédula" style="font-weight: bold" />
+                        <p:inputText disabled="true"  id="cedulaC2" value="#{conductoresManaged.conductorSelecionado2.cedula}" />
+                        <p:message for="cedulaC2" display="icon" />
+
+                        <p:outputLabel for="expedidaC2" value="Expedida" style="font-weight: bold" />
+                        <p:inputText disabled="true" id="expedidaC2" value="#{conductoresManaged.conductorSelecionado2.expedida}" />
+                        <p:message for="expedidaC2" display="icon" />
+
+                        <p:outputLabel for="celularC2" value="Celular" style="font-weight: bold" />
+                        <p:inputText id="celularC2" value="#{conductoresManaged.conductorSelecionado2.celular}" />
+                        <p:message for="celularC2" display="icon" />
+
+                        <p:outputLabel for="telefonoC2" value="Teléfono" style="font-weight: bold" />
+                        <p:inputText id="telefonoC2" value="#{conductoresManaged.conductorSelecionado2.telefono}" />
+                        <p:message for="telefonoC2" display="icon" />
+
+                        <p:outputLabel for="barrioC2" value="Barrio" style="font-weight: bold" />
+                        <p:inputText id="barrioC2" value="#{conductoresManaged.conductorSelecionado2.barrio}" />
+                        <p:message for="barrioC2" display="icon" />
+
+                        <p:outputLabel for="arpC2" value="ARP" style="font-weight: bold" />
+                        <p:inputText id="arpC2" value="#{conductoresManaged.conductorSelecionado2.arp}" />
+                        <p:message for="arpC2" display="icon" />
+
+                        <p:outputLabel for="epsC2" value="EPS" style="font-weight: bold" />
+                        <p:inputText id="epsC2" value="#{conductoresManaged.conductorSelecionado2.eps}" />
+                        <p:message for="epsC2" display="icon" />
+
+                        <p:outputLabel for="GrupoSangineoC2" value="Grupo Sangíneo" style="font-weight: bold" />
+                        <p:inputText id="GrupoSangineoC2" value="#{conductoresManaged.conductorSelecionado2.grupoSangineo}"/>
+                        <p:message for="GrupoSangineoC2" display="icon" />
+
+                        <p:outputLabel for="generoC2" value="Genero" style="font-weight: bold" />
+                        <p:selectOneMenu id="generoC2" value="#{conductoresManaged.conductorSelecionado2.genero}" style="width: 90%;">
+                            <f:selectItem itemValue="Masculino" itemLabel="Masculino" />
+                            <f:selectItem itemValue="Femenino" itemLabel="Femenino" />
+                        </p:selectOneMenu>
+                        <p:message for="generoC2" display="icon" />
+
+                        <p:outputLabel for="estadoCivilC2" value="Estado Civil" style="font-weight: bold" />
+                        <p:inputText id="estadoCivilC2" value="#{conductoresManaged.conductorSelecionado2.estadoCivil}" />
+                        <p:message for="estadoCivilC2" display="icon" />
+
+                        <p:outputLabel for="numHijosC2" value="Número de Hijos" style="font-weight: bold" />
+                        <p:inputText id="numHijosC2" value="#{conductoresManaged.conductorSelecionado2.numHijos}" />
+                        <p:message for="numHijosC2" display="icon" />
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{conductoresManaged.editar}" value="Guardar" update=":form:tablaConductores" />
+                    <p:commandButton value="Cancelar" type="button" update="form:editarConductor" onclick="PF('editarDialogConductor').hide()" />
+                </p:outputPanel>
+            </p:dialog>
+            <!-- Editar -->
+
+
+        </h:form>
+    </h:body>
+</html>
+

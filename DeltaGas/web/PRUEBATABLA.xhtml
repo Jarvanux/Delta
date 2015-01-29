@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Facelet Title</title>
+    </h:head>
+    <h:body>
+        <h:form id="form">                       
+
+            <p:dataTable id="checkusuarios" var="usuarios" value="#{servicioTecnicoManaged.listaUsuarios}"
+                         selection="#{servicioTecnicoManaged.seleccionados}"
+                         rowKey="#{usuarios.idEmpleado}" style="max-height: 500px; width: 500px; overflow: auto;"
+                         widgetVar="tablaUsuarios" filteredValue="#{servicioTecnicoManaged.filtro}"
+                         emptyMessage="No hay registros"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                         scrollable="true" scrollHeight="200"                                         
+                         >
+                <f:facet  name="header">                                                                         
+                    <p:inputText id="globalFilter" onkeyup="PF('tablaUsuarios').filter()" style="width: 150px;" placeholder="Buscar" >
+                        <p:ajax update=":form:checkusuarios" />
+                        <p:ajax onstart="PF('tablaUsuarios').filter()" />
+                    </p:inputText>
+                </f:facet>
+
+                <p:column selectionMode="multiple" style="width:16px;text-align:center" filterStyle="display:none" filterMatchMode="contains" />
+                <p:column headerText="Nit" filterBy="#{usuarios.nit}" filterStyle="display:none" filterMatchMode="contains">
+                    <p:outputLabel value="#{usuarios.nit}" />
+                </p:column>
+
+                <p:column headerText="Usuario" filterBy="#{usuarios.nombre} #{usuarios.apellido}" filterStyle="display:none" filterMatchMode="contains">
+                    <p:outputLabel value="#{usuarios.nombre} #{usuarios.apellido}" />
+                </p:column>
+
+                <p:column headerText="Correo" filterBy="#{usuarios.correo}" filterStyle="display:none" filterMatchMode="contains">
+                    <p:outputLabel value="#{usuarios.correo}" />
+                </p:column>                                
+                <f:facet name="footer">
+                    <p:outputLabel value="Número total: #{servicioTecnicoManaged.listaUsuarios.size()}"/>
+                </f:facet>
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>
+

@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      >
+    <h:head>
+        <title>Pago</title>
+    </h:head>
+    <h:body>
+        <h:form id="form">
+            <p:growl id="mensaje2" showSummary="false" autoUpdate="false"  showDetail="true" />  
+            <p:dataTable id="tabla" var="pago" value="#{pagoManaged1.listaPagoConvenios}" widgetVar="pagoTable" style="font-family: calibri; width: 100%;"
+                         emptyMessage="No hay registros" filteredValue="#{pagoManaged1.filtroPagoConvenios}"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         paginator="true"
+                         rows="10"
+                         selectionMode="single"                              
+                         rowKey="#{pago.numeroConsig}"
+                         rowsPerPageTemplate="10,25,50,100"                         
+                         >
+                <f:facet name="header">               
+                    <p:outputPanel style="text-align: right" > 
+                        <p:outputLabel value="Convenio:" for="cbxConvenio" style="float:left; margin-top: 6px;" />
+                        <p:selectOneMenu value="#{pagoManaged1.listarPor}" id="cbxConvenio" style="width:180px; text-align: left; float: left; margin-top: 5px; margin-left: 5px;" >
+                            <f:selectItem  itemLabel="Todos" itemValue="-1"/>
+                            <f:selectItems var="convenio" itemLabel="#{convenio.nombreConvenio}" itemValue="#{convenio.idConvenio}" 
+                                           value="#{convenioManaged.listaConvenio}" />                            
+                            <p:ajax listener="#{pagoManaged1.listarPor()}" update=":form"  />
+                            <p:ajax onstart="PF('pagoTable').filter()" />
+                        </p:selectOneMenu>                                        
+                        <p:inputText id="globalFilter" onkeyup="PF('pagoTable').filter()" style="width:150px; " placeholder="Buscar" />
+                        <p:commandButton icon="#{pagoManaged1.iconoBotonSubFiltros}" title="#{pagoManaged1.tituloBotonActivarSubFiltros}" actionListener="#{pagoManaged1.controlarSubFiltros()}" style="width: 25px; height: 25px;" update=":form"/>
+                    </p:outputPanel>                   
+                </f:facet>
+
+                <p:column headerText="Número de consignación"  filterBy="#{pago.numeroConsig}" filterStyle="display:#{pagoManaged1.visibilidaSubFiltros}"  filterMatchMode="contains">                    
+                    <h:outputText value="#{pago.numeroConsig}" />
+                </p:column>
+
+                <p:column headerText="Convenio" sortBy="#{pago.idConvenio.nombreConvenio}" filterBy="#{pago.idConvenio.nombreConvenio}"  filterStyle="display:#{pagoManaged1.visibilidaSubFiltros}" filterMatchMode="contains">                    
+                    <h:outputText value="#{pago.idConvenio.nombreConvenio}" />
+                </p:column>
+
+                <p:column headerText="Placa del Vehículo" sortBy="#{pago.idVehiculo.placa}" filterBy="#{pago.idVehiculo.placa}" filterStyle="display:#{pagoManaged1.visibilidaSubFiltros}" filterMatchMode="contains">                    
+                    <h:outputText value="#{pago.idVehiculo.placa}" />
+                </p:column>
+                <p:column headerText="Fecha consignación" sortBy="#{pago.fechaConsignacion}" filterBy="#{pago.fechaConsignacion}" filterStyle="display:none" filterMatchMode="contains">                    
+                    <h:outputText value="#{pago.fechaConsignacion}" ><f:convertDateTime pattern="YYYY/MM/dd" /></h:outputText>
+                </p:column>
+                <p:column headerText="valor consignación" filterBy="#{pago.valorConsignacion}" filterStyle="display:none"  filterMatchMode="contains">                    
+                    <h:outputText value="#{pago.valorConsignacion}" />
+                </p:column>
+                <p:column headerText="Opciones" style="width:12%;">                                                            
+                    <p:commandButton oncomplete="PF('dlgDetalles').show()" icon="ui-icon-circle-plus" style=" width: 25px; height: 25px; float: left;" title="Detalles" update=":form:displayDetalles" >
+                        <f:setPropertyActionListener value="#{pago}" target="#{pagoManaged1.pagoConvenio}" />
+                    </p:commandButton>                   
+
+                </p:column>
+            </p:dataTable>   
+
+            <!-- Detalles Pago -->
+            <p:dialog widgetVar="dlgDetalles" modal="false" resizable="false" header="Detalles Pago" showEffect="puff" hideEffect="explode">                 
+                <p:outputPanel id="displayDetalles" style="text-align: left;">
+                    <p:panelGrid columns="2" rendered="#{not empty pagoManaged1.pagoConvenio}">
+                        <p:outputLabel value="Número de consignación:" style="font-weight: bold;"/>
+                        <p:outputLabel  value="#{pagoManaged1.pagoConvenio.numeroConsig}" />
+                        <p:outputLabel value="Convenio:" style="font-weight: bold;"/>
+                        <p:outputLabel value="#{pagoManaged1.pagoConvenio.idConvenio.nombreConvenio}" />
+                        <p:outputLabel value="Asociado:" />
+                        <p:outputLabel value="#{pagoManaged1.pagoConvenio.idVehiculo.idAsociado.nombre} #{pagoManaged1.pagoConvenio.idVehiculo.idAsociado.apellido}" />                        
+                        <p:outputLabel value="Documento Asociado:" />
+                        <p:outputLabel value="#{pagoManaged1.pagoConvenio.idVehiculo.idAsociado.cedula}" />
+                        <p:outputLabel value="Vehículo:" />
+                        <p:outputLabel value="#{pagoManaged1.pagoConvenio.idVehiculo.placa}" />
+                        <p:outputLabel value="Fecha consignación:" />
+                        <p:outputLabel value="#{pagoManaged1.pagoConvenio.fechaConsignacion}" ><f:convertDateTime pattern="YYYY/MM/dd" /></p:outputLabel>
+                        <p:outputLabel value="Desde:" />
+                        <p:outputLabel value="#{pagoManaged1.pagoConvenio.fechaInicio}" ><f:convertDateTime pattern="YYYY/MM/dd" /></p:outputLabel>
+                        <p:outputLabel value="Hasta:" />
+                        <p:outputLabel value="#{pagoManaged1.pagoConvenio.fechaFin}" ><f:convertDateTime pattern="YYYY/MM/dd" /></p:outputLabel>
+                        <p:outputLabel for="valorPagoRealizado2" value="Valor" />
+                        <p:outputLabel id="valorPagoRealizado2" value="#{pagoManaged1.pagoConvenio.valorConsignacion}" />
+                        <p:outputLabel value="Observacines:"/>
+                        <p:inputTextarea value="#{pagoManaged1.pagoConvenio.observacion}" rows="5" cols="23" counterTemplate="{0} characters remaining." autoResize="false" disabled="true"></p:inputTextarea>
+                    </p:panelGrid>                    
+                </p:outputPanel>
+                <div style="text-align: right; margin: 0px;">
+                    <p:commandButton onclick="PF('dlgDetalles').hide()" value="Volver Atrás" />
+                </div>
+            </p:dialog>
+            <!-- Fin detalles Pago -->          
+
+        </h:form>
+    </h:body>
+</html>
+

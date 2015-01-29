@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>aplicarEstilos</title>
+        <style type="text/css">
+            *{
+                font-family: Arial, Verdana, sans-serif;
+            }
+
+        </style>
+    </h:head>
+    <h:body>
+        <h:form>
+            <p:panel style="height: 480px; padding: 6px; text-align: left;">
+                <f:facet name="header">                    
+                    <p:outputLabel value="Bienvenido al sistema de DeltaGas" style="font-size: 17px;"/>
+                </f:facet>
+                <p:outputLabel value="#{inicioManaged.mensaje}" style="display: block; margin-top: 30px; font-size: 17px;"/>
+            </p:panel>
+        </h:form>
+    </h:body>
+</html>
+

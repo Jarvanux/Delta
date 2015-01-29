@@ -1,0 +1,295 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui" 
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Reuniones</title>
+    </h:head>
+    <h:body>
+        <!--MENSAJE DE LAS OPERACIONES REALIZADAS-->
+        <!--FIN MENSAJE-->
+        <p:growl id="mensaje2" autoUpdate="false" showSummary="false"  showDetail="true"/>
+        <h:form id="form">
+            <!--TABLA LISTAR REUNIONES-->
+            <p:dataTable id="tabla" var="reunion" value="#{reunionManaged.listaReuniones}" widgetVar="tablaReunion" style="font-family: calibri; width: 100%;"
+                         emptyMessage="No hay registros" filteredValue="#{reunionManaged.filtroReuniones}"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         paginator="true"
+                         rows="10"
+                         selectionMode="single"           
+                         rowKey="#{reunion.idReunion}"
+                         rowsPerPageTemplate="10,20,30,40,50,60,70,80,90,100" >                
+
+                <f:facet name="header">
+                    <p:outputPanel style="text-align: right" >                               
+                        <p:commandButton value="Agregar"  style="  margin-right: 10%;">                                                                       
+                            <p:ajax listener="#{reunionManaged.limpiar()}" update=":form" />                                                                                                    
+                            <p:ajax onstart="PF('dlgCrear').show()"  /> 
+                        </p:commandButton> 
+                        <p:inputText id="globalFilter" onkeyup="PF('tablaReunion').filter()" style="width:150px; " placeholder="Buscar" />                        
+                    </p:outputPanel>                   
+                </f:facet>
+
+                <p:column headerText="Nombre reunión" filterBy="#{reunion.nombre}" filterStyle="display:none"  filterMatchMode="contains">
+                    <h:outputText value="#{reunion.nombre}" />                  
+                </p:column>
+                <p:column headerText="Descripción" filterBy="#{reunion.descripcion}" filterStyle="display:none" filterMatchMode="contains">
+                    <h:outputText value="#{reunion.descripcion}" />
+                </p:column>
+                <p:column headerText="Fecha" filterBy="#{reunion.fechaReunion}"  filterStyle="display:none"  filterMatchMode="contains">
+                    <h:outputText value="#{reunion.fechaReunion}">
+                        <f:convertDateTime pattern="yyyy/MM/dd"/>
+                    </h:outputText>                          
+                </p:column>
+                <p:column headerText="Lugar" filterBy="#{reunion.lugar}" filterStyle="display:none" filterMatchMode="contains">     
+                    <h:outputText value="#{reunion.lugar}" />                               
+                </p:column>
+                <p:column headerText="Estado" filterBy="#{reunion.estadoReunion}" filterStyle="display:none" filterMatchMode="contains">        
+                    <h:outputText value="#{reunion.estadoReunion}" />                  
+                </p:column>                
+
+                <p:column headerText="Opciones" style="width:12%;">                                               
+
+                    <p:commandButton  icon="ui-icon-pencil" title="Editar" style="width: 25px; height: 25px; float: left;" >                                                                                                       
+                        <p:ajax listener="#{reunionManaged.limpiar()}" update=":form" />
+                        <p:ajax onstart="PF('dlgEditar').show()" />
+                        <p:ajax listener="#{reunionManaged.prepararEdicion(reunion)}" update=":form:displayEditar" />                                                      
+                    </p:commandButton>                    
+                </p:column>               
+            </p:dataTable> 
+            <!--FIN TABLA LISTAR REUNIONES-->
+
+            <!-- Editar Reunión -->
+            <p:dialog widgetVar="dlgEditar" resizable="false" header="Editar reunión" showEffect="clip">
+                <p:panelGrid id="displayEditar" columns="3" columnClasses="label,value">
+                    <p:outputLabel for="nombre2" value="Nombre:" />                    
+                    <p:inputText id="nombre2" value="#{reunionManaged.reunion.nombre}" />
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString1}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel for="descripcion2" value="Descripción:" />
+                    <p:inputTextarea id="descripcion2" style="width: 95%;" value="#{reunionManaged.reunion.descripcion}" rows="3" autoResize="false" />                    
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString7}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel for="fecha2" value="Fecha:" />
+                    <p:calendar id="fecha2" value="#{reunionManaged.reunion.fechaReunion}" />
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenDate1}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel for="lugar2" value="Lugar:" />
+                    <p:inputText id="lugar2" value="#{reunionManaged.reunion.lugar}" />
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString2}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel for="estado2" value="Estado:" />
+                    <p:inputText id="estado2" value="#{reunionManaged.reunion.estadoReunion}" />
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString3}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                </p:panelGrid>
+                <p:panel style="text-align: right; border: 0px; margin: 0px;">
+                    <p:commandButton value="Guardar Cambios" action="#{reunionManaged.validarEditar()}" onclick="PF('cargando').show()" oncomplete="PF('cargando').hide(); PF('dlgMensajeCreacion').show();" update=":form"/>
+                    <p:commandButton value="Cancelar" onclick="PF('dlgEditar').hide()"/>
+                </p:panel>
+                <p:panel style="text-align: center; border: 0px; margin: 0px;">
+                    <p:commandButton onclick="PF('dlgAsistencia').show()" value="Configurar asistencia" title="Quienes deben asistir" style="margin: 0px;" />
+                </p:panel>
+            </p:dialog>
+            <script type="text/javascript">
+                 if (#{reunionManaged.completoEditar}) {
+                     // showDialog();
+                     dlgEditar.hide();
+                 } else {
+                     dlgEditar.show();
+                 }
+            </script>
+            <!-- Fin Editar Reunión -->            
+
+            <!-- Crear Reunión -->
+            <p:dialog widgetVar="dlgCrear" resizable="false" header="Crear Reunión" showEffect="fade">              
+                <p:panelGrid id="displayCrear" columns="3" columnClasses="label,value">   
+
+                    <p:outputLabel for="nombre" value="Nombre:" />
+                    <p:inputText id="nombre" value="#{reunionManaged.nombre}" />
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString1}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel for="descripcion" value="Descripción:" />
+                    <p:inputTextarea id="descripcion" style="width: 95%;" value="#{reunionManaged.descripcion}" rows="3" autoResize="false" />                    
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString7}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel for="fecha" value="Fecha:" />
+                    <p:calendar id="fecha" value="#{reunionManaged.fechaReunion}" />
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenDate1}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel for="lugar" value="Lugar:" />
+                    <p:inputText id="lugar" value="#{reunionManaged.lugar}" />
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString2}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                    <p:outputLabel for="estado" value="Value:" />
+                    <p:inputText id="estado" value="#{reunionManaged.estadoReunion}" />                                          
+                    <p:graphicImage value="../imagenes/#{validarFormularios.imagenString3}" style="width: #{validarFormularios.sizeX}px; height: #{validarFormularios.sizeY}px; display: #{validarFormularios.sizeXFinal};" />
+                </p:panelGrid>                    
+                <p:panel style="text-align: right; border: 0px;">
+                    <p:commandButton value="Limpiar" actionListener="#{reunionManaged.limpiar()}" update=":form:displayCrear" title="Limpiar formulario."/>
+                    <p:commandButton value="Crear" actionListener="#{reunionManaged.validar()}" onclick="PF('cargando').show()" oncomplete="PF('cargando').hide(); PF('dlgMensajeCreacion').show();" update=":form" title="Guardar reunión"/>
+                    <p:commandButton value="Cancelar" onclick="PF('dlgCrear').hide()"/>
+
+                </p:panel>                    
+                <p:panel style="text-align: center; border: 0px; margin: 0px;">
+                    <p:commandButton onclick="PF('dlgAsistencia').show()" value="Configurar asistencia" title="Quienes deben asistir" style="margin: 0px;" />
+                    <p:commandButton value="SMS" onclick="PF('dlgEditarSMS').show()" title="Editar mensaje de notificación." />
+                </p:panel>
+            </p:dialog>
+            <script type="text/javascript">
+                 if (#{reunionManaged.completo}) {
+                     // showDialog();
+                     dlgCrear.hide();
+                 } else {
+                     dlgCrear.show();
+                 }
+            </script>
+            <!-- Fin Crear Reunión -->
+
+            <!--DIALOGO EDITAR MENSAJE DE NOTIFICACIÓN-->
+            <p:dialog widgetVar="dlgEditarSMS" header="Editar mensaje" resizable="false">
+                <div style="width: 500px; text-align: center;">
+                <p:inputTextarea value="#{reunionManaged.mensajeEdicion}" style="width: 95%;" rows="3" autoResize="false"/>
+                <p:commandButton value="Actualizar" actionListener="#{reunionManaged.actualizarMensaje()}" onclick="PF('dlgEditarSMS').hide()" update=":mensaje2"/>
+                <p:commandButton value="Cancelar" onclick="PF('dlgEditarSMS').hide()"/>
+                </div>
+            </p:dialog>            
+            <!--FIN DIALOGO MENSAJE DE NOTIFICACIÓN-->
+
+            <!--DIALOGO DE SELECCIÓN PARA CONFIGURAR ASISTENCIA EMPLEADOS/CONDUCTORES-->
+            <p:dialog widgetVar="dlgAsistencia" resizable="false" header="Configuración asistencia" showEffect="clip" >
+                <p:commandButton value="Seleccionar empleados" onclick="PF('dlgConfigAsistencia2').show()"/>
+                <p:commandButton value="Seleccionar Conductores" onclick="PF('dlgConfigAsistencia').show()"/>
+            </p:dialog>
+            <!--FIN DIALOG DE SELECCIÓN-->
+
+            <!--DIALOGO PARA CONFIGURAR ASISTENCIA POR ZONAS - CONDUCTORES-->
+            <p:dialog widgetVar="dlgConfigAsistencia" resizable="false" header="Asistencia por Zonas - Conductores" showEffect="clip">
+                <p:panel id="displayConfigAsistencia" style="max-height: 500px; width: 500px; overflow: auto;">
+                    <!--TABLA CON LA LISTA DE VEHICULOS POR ZONAS-->
+                    <p:dataTable id="checkVehiculos" var="vehiculo" value="#{reunionManaged.vehiculos}"                                                       
+                                 selection="#{reunionManaged.vehiculosSeleccionados}" 
+                                 rowKey="#{vehiculo.idVehiculo}" style="margin-bottom:0; width: 100%; float: left;" 
+                                 widgetVar="tablaVehiculo" filteredValue="#{reunionManaged.vehiculosFiltrados}" 
+                                 emptyMessage="No hay registros" 
+
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 paginator="true"
+                                 rows="6"                                                                        
+                                 >
+                        <f:facet name="header">                    
+                            <p:selectOneMenu value="#{reunionManaged.idZona}" id="zonal" style="width:180px; text-align: left;  margin-top: 5px; margin-left: 5px;" >                
+                                <f:selectItems var="z" itemLabel="#{z.nombre}" itemValue="#{z.idZona}" 
+                                               value="#{zonaManaged.listaZonas}" />                            
+                                <p:ajax listener="#{reunionManaged.listarPor()}" update=":form:displayConfigAsistencia"  />
+                                <p:ajax update=":form:displayConfigAsistencia" />
+                            </p:selectOneMenu>                      
+                        </f:facet> 
+
+                        <p:columnGroup type="header">
+                            <p:row>
+                                <p:column colspan="2" headerText="Vehículo" />
+                                <p:column colspan="2" headerText="Propietario" />
+                            </p:row>
+                            <p:row>
+                                <p:column selectionMode="multiple"/>
+                                <p:column headerText="Placa" />
+                                <p:column headerText="Cédula" />
+                                <p:column headerText="Nombre" />
+                            </p:row>
+                        </p:columnGroup>             
+                        <p:column selectionMode="multiple" style="width:16px;text-align:center"/>                                                                  
+
+                        <p:column headerText="Placa">
+                            <h:outputText value="#{vehiculo.placa}" />
+                        </p:column>                                                                            
+
+                        <p:column>
+                            <h:outputText value="#{vehiculo.idAsociado.cedula}" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{vehiculo.idAsociado.nombre} #{vehiculo.idAsociado.apellido}" />                    
+                        </p:column>
+                        <f:facet name="footer">                    
+                            <p:outputLabel value="Vehiculos: #{reunionManaged.numeroRegistros}" />                    
+                        </f:facet>
+                    </p:dataTable>
+                    <!--FIN TABLA DE VEHICULOS POR ZONAS-->                    
+                    <h:panelGrid columns="3" style="margin: 0 auto;">
+                        <p:commandButton value="Agregar a la lista" actionListener="#{reunionManaged.agregarAListaVehiculos()}" title="Agregar a la lista" style="margin-left: 20px; font-size: 13px;" update=":form:displayConfigAsistencia, :mensaje2" />
+                        <p:commandButton value="Finalizar configuración"  onclick="PF('dlgConfigAsistencia').hide()" style="font-size: 13px;" title="Finalizar Configuración"/>
+                        <p:commandButton value="Todos" actionListener="#{reunionManaged.todosLosConductores()}" style="font-size: 13px;" onclick="PF('dlgConfigAsistencia').hide()" update=":mensaje2"/>
+                    </h:panelGrid>
+                </p:panel>
+            </p:dialog>
+            <!--FIN DIALOGO CONFIGURACIÓN ASISITENCIA POR ZONAS - CONDUCTORES-->
+
+
+            <!--DIALOGO CONFIGURAR ASISTENCIA USUARIOS - EMPLEADOS-->
+            <p:dialog widgetVar="dlgConfigAsistencia2" resizable="false" header="Asistencia Usuarios - Empleados" showEffect="clip">
+                <p:panel id="displayConfigAsistencia2" style="max-height: 500px; width: 500px; overflow: auto;">
+                    <p:dataTable id="checkEmpleados" var="empleados" value="#{reunionManaged.listaEpleados}"
+                                 selection="#{reunionManaged.empleadosSeleccionados}" 
+                                 rowKey="#{empleados.idEmpleado}" style="margin-bottom:0; width: 100%; float: left;" 
+                                 widgetVar="tablaEmpleados" filteredValue="#{reunionManaged.filtroEmpleado}" 
+                                 emptyMessage="No hay registros" 
+
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 paginator="true"
+                                 rows="6"                                                                        
+                                 >
+                        <f:facet name="header">                    
+                            <p:selectOneMenu value="#{reunionManaged.idEstado}" id="estado" style="width:180px; text-align: left;  margin-top: 5px; margin-left: 5px;" >
+                                <f:selectItem itemLabel="Activos" itemValue="1" />
+                                <f:selectItem itemLabel="Deshabilitados" itemValue="2" />
+                                <p:ajax listener="#{reunionManaged.listarPorEstado()}" update=":form:displayConfigAsistencia2"  />
+                                <p:ajax update=":form:displayConfigAsistencia2" />
+                            </p:selectOneMenu>                      
+                        </f:facet> 
+
+                        <p:columnGroup type="header">                       
+                            <p:row>
+                                <p:column selectionMode="multiple"/>
+                                <p:column headerText="Rol" />
+                                <p:column headerText="Cédula" />
+                                <p:column headerText="Nombre" />
+                            </p:row>
+                        </p:columnGroup>             
+                        <p:column selectionMode="multiple" style="width:16px;text-align:center"/>                                                                  
+
+                        <p:column headerText="Placa">
+                            <h:outputText value="#{empleados.idRol.nombre}" />
+                        </p:column>                                                                            
+
+                        <p:column>
+                            <h:outputText value="#{empleados.cedula}" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{empleados.nombre} #{empleados.apellido}" />                    
+                        </p:column>                       
+                        <f:facet name="footer">                    
+                            <p:outputLabel value="Empleados: #{reunionManaged.numeroRegistros2}" />
+                        </f:facet>
+                    </p:dataTable>
+                    <h:panelGrid columns="3" style="margin: 0 auto;">
+                        <p:commandButton value="Agregar a la lista" actionListener="#{reunionManaged.agregarAListaEmpleados()}" title="Agregar a la lista" style="margin-left: 20px; font-size: 13px;" update=":form:displayConfigAsistencia2, :mensaje2" />
+                        <p:commandButton value="Finalizar configuración"  onclick="PF('dlgConfigAsistencia2').hide()" style="font-size: 13px;" title="Finalizar Configuración"/>
+                        <p:commandButton value="Todos" actionListener="#{reunionManaged.todosLosEmpleados()}" onclick="PF('dlgConfigAsistencia2').hide()" style="font-size: 13px;" update=":mensaje2"/>
+                    </h:panelGrid>
+                </p:panel>
+            </p:dialog>
+            <!--FIN DIALGO CONFIGURAR ASISTENCIA USUARIOS - EMPLEADOS-->
+
+            <!--DIALOGO RESULTADO OPERACION-->
+            <p:dialog widgetVar="dlgMensajeCreacion" modal="false" resizable="false" header="Resultado operación" showEffect="fade" >
+                <p:panel style="width: 400px;">
+                    <p:messages id="mensajeCreacion" autoUpdate="true"/>
+                    <p:commandButton value="Ok" icon="ui-icon-circle-check" onclick="PF('dlgMensajeCreacion').hide();" style="float: right;"/>
+                </p:panel>
+            </p:dialog> 
+            <!--FIN DIALOGO RESULTADO OPERACION-->
+
+            <!--DIALGO DE VENTANA MODAL PARA ESTADO CARGANDO...-->
+            <p:dialog widgetVar="cargando" modal="true" resizable="false" header="Notificando..." showEffect="fade" closable="false">
+                <div style="text-align: center;">
+                    <p:graphicImage id="img" value="../imagenes/loading.gif" style="width: 100px; height: 100px;" />
+                </div> 
+            </p:dialog> 
+            <!--FIN DIALOGO VENTANA CARGANDO-->
+        </h:form>
+    </h:body>
+</html>
+

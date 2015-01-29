@@ -1,0 +1,179 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Ordenes de servicio</title>
+        <script>
+            function traducir() {
+                $('span.ui-paginator-current').html($('span.ui-paginator-current').html().replace('of', 'de'));
+            }
+        </script>
+    </h:head>
+    <h:body onload="traducir()">
+        <h:form id="form">
+            <p:growl autoUpdate="true" />
+            <script>
+                traducir();
+            </script>
+            <p:dialog widgetVar="cargando" modal="true" resizable="false" header="Cargando..." showEffect="fade" closable="false">
+                <p:graphicImage id="img" value="../imagenes/loading.gif" style="width: 100px; height: 100px;" />
+            </p:dialog>
+            <!--DIALOGOS-->
+
+            <p:dialog widgetVar="dlgSelectTecnicos" modal="true" resizable="false" header="Selección de equipo" showEffect="fade" >               
+                <p:panel id="displaySelect">
+                    <!-- SELECCIÓN DE TÉCNICOS-->
+                    <p:dataTable id="checkEmpleados" var="empleados" value="#{servicioTecnicoManaged.listaEpleados}"
+                                 selection="#{servicioTecnicoManaged.empleadosSeleccionados}" 
+                                 rowKey="#{empleados.idEmpleado}" style="margin-bottom:0; width: 100%; float: left;" 
+                                 widgetVar="tablaEmpleados" filteredValue="#{servicioTecnicoManaged.filtroEmpleado}" 
+                                 emptyMessage="No hay registros" 
+
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 paginator="true"
+                                 rows="6"                                                                        
+                                 >
+                        <f:facet name="header">
+                            <p:inputText id="globalFilter" onkeyup="PF('tablaEmpleados').filter()" style="width: 150px;" placeholder="Buscar" />
+                        </f:facet>                                   
+                        <p:column selectionMode="multiple" style="width:16px;text-align:center"/>                                                                  
+
+                        <p:column headerText="Placa" filterBy="#{empleados.idRol.nombre}" filterStyle="display:none" filterMatchMode="contains">
+                            <h:outputText value="#{empleados.idRol.nombre}" />
+                        </p:column>                                                                            
+
+                        <p:column headerText="Cedula" filterBy="#{empleados.cedula}" filterStyle="display:none" filterMatchMode="contains">
+                            <h:outputText value="#{empleados.cedula}" />
+                        </p:column>
+                        <p:column headerText="Nombre">
+                            <h:outputText value="#{empleados.nombre} #{empleados.apellido}" />                    
+                        </p:column>                       
+                        <f:facet name="footer">                    
+                            <p:outputLabel value="Empleados: #{reunionManaged.numeroRegistros2}" />
+                        </f:facet>
+                    </p:dataTable>
+                    <!--FIN SELECCIÓN TÉCNICOS-->
+                </p:panel>
+                <div id="botons" style="width: 99%; margin: 0 auto; text-align: right;" >
+                    <p:commandButton value="Finalizar" onclick="PF('dlgSelectTecnicos').hide()" actionListener="#{servicioTecnicoManaged.guardarCambios()}" update=":form:displayDetalles:tableEquipo" />
+                    <p:commandButton value="Cancelar" onclick="PF('dlgSelectTecnicos').hide()"/>
+                </div>
+            </p:dialog> 
+
+            <!--DETALLES-->
+            <p:dialog id="dlgDetallesId" widgetVar="dlgDetalles" resizable="false" header="Detalles de solicitud" showEffect="explode">
+                <p:tabView id="displayDetalles">
+                    <p:tab title="Detalles solicitud" >
+                        <h:panelGrid columns="1">
+                            <p:panelGrid columnClasses="label,label" columns="2"  style="width: 100%; margin: 0 auto;">
+                                <p:outputLabel value="Fecha solicitud:" />
+                                <p:outputLabel value="#{servicioTecnicoManaged.servicioTecnico.fechaRegistro}" ><f:convertDateTime parent="dd/MM/yyyy HH:mm:ss" /></p:outputLabel>
+                                <p:outputLabel value="Código de solicitud: " />
+                                <p:outputLabel value="#{servicioTecnicoManaged.servicioTecnico.codigoRegistro}" />
+                                <p:outputLabel value="Estación de gas:" ></p:outputLabel>
+                                <p:outputLabel value="#{servicioTecnicoManaged.servicioTecnico.idEtacion.nombre}" />
+                                <p:outputLabel value="Requerimiento:" />
+                                <p:outputLabel value="#{servicioTecnicoManaged.servicioTecnico.idRequerimiento.descripcion}" />
+                                <p:outputLabel value="Descripción:" />
+                                <p:inputTextarea id="descripcion" value="#{servicioTecnicoManaged.servicioTecnico.descripcionCliente}" style="width: 95%; max-width: 300px; max-height: 200px;" rows="3" autoResize="false" placeholder="Descripción del problema." disabled="true"/>
+                            </p:panelGrid>
+                            <h3 style="font-size: 18px;">Detalles del cliente</h3>
+                            <p:panelGrid columnClasses="label,label" columns="2" style="width: 100%; margin: 0 auto;">
+                                <p:outputLabel value="Nombre:" />
+                                <p:outputLabel value="#{servicioTecnicoManaged.servicioTecnico.idCliente.nombre}" />
+                                <p:outputLabel value="Apellido:" />
+                                <p:outputLabel value="#{servicioTecnicoManaged.servicioTecnico.idCliente.apellido}" />
+                                <p:outputLabel value="Celular:" />
+                                <p:outputLabel value="#{servicioTecnicoManaged.servicioTecnico.idCliente.celular}" />
+                                <p:outputLabel value="Teléfono" />
+                                <p:outputLabel value="#{servicioTecnicoManaged.servicioTecnico.idCliente.telefono}" />                                
+                            </p:panelGrid>
+                        </h:panelGrid>
+                    </p:tab>
+                    <p:tab title="Asignar equipo" >
+                        <!-- SELECCIÓN DE TÉCNICOS-->
+                        <p:dataTable id="tableEquipo" var="usuarios" value="#{servicioTecnicoManaged.empleadosSeleccionados}"                                     
+                                     rowKey="#{usuarios.idEmpleado}" style="max-height: 500px; width: 500px; overflow: auto;"
+                                     widgetVar="tableEquipo" filteredValue="#{servicioTecnicoManaged.filtro}"
+                                     emptyMessage="No hay registros"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                     rows="6" paginator="6"
+                                     >
+                            <f:facet  name="header">                                                                         
+                                <p:commandButton value="Agregar nuevo" onclick="PF('dlgSelectTecnicos').show()"></p:commandButton>
+                            </f:facet>
+                            <p:column headerText="Nit" filterBy="#{usuarios.nit}" filterStyle="display:none" filterMatchMode="contains">
+                                <p:outputLabel value="#{usuarios.nit}" />
+                            </p:column>
+
+                            <p:column headerText="Usuario" filterBy="#{usuarios.nombre} #{usuarios.apellido}" filterStyle="display:none" filterMatchMode="contains">
+                                <p:outputLabel value="#{usuarios.nombre} #{usuarios.apellido}" />
+                            </p:column>
+
+                            <p:column headerText="Correo" filterBy="#{usuarios.correo}" filterStyle="display:none" filterMatchMode="contains">
+                                <p:outputLabel value="#{usuarios.correo}" />
+                            </p:column>
+                            <f:facet name="footer">
+                                <p:outputLabel value="Número total: #{servicioTecnicoManaged.seleccionados.size()}"/>
+                            </f:facet>
+                        </p:dataTable>
+                        <!--FIN SELECCIÓN TÉCNICOS-->
+                    </p:tab>
+                    <p:tab title="Insumos">
+                        <h:panelGrid columns="1" >
+                            <p:outputLabel value="Hola que hace!" />
+                        </h:panelGrid>
+                    </p:tab>
+                </p:tabView>                
+                <div id="botones" style="text-align: right; margin-top: 10px;">                    
+                    <p:commandButton value="Guardar cambios" update=":form:displayDetalles" actionListener="#{servicioTecnicoManaged.guardarCambios()}" title="Responder"/>
+                    <p:commandButton value="Cerrar" type="button" title="Cerrar" onclick="PF('dlgDetalles').hide()"/>
+                </div>
+            </p:dialog>
+            <!--FIN DETALLES-->
+            <!--FIN DIALOGOS-->
+
+            <!--//TABLA DE CONTENDIDO-->
+            <p:dataTable id="tabla" var="servicio" value="#{servicioTecnicoManaged.lista}" 
+                         widgetVar="tablaServicio"
+                         emptyMessage="No hay registros" filteredValue="#{servicioTecnicoManaged.listaFiltro}"
+                         style="font-family: sans-serif; width: 100%;"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         paginator="true"
+                         rows='10'
+                         selectionMode="single"
+                         rowKey="#{servicio.idServicio}"
+                         rowsPerPageTemplate="10,20,30,40,50,60,70,80,90,100"
+                         >
+                <f:facet name="header">
+                    <p:outputPanel style="text-align: right">
+                        <p:inputText id="globalFilter" onkeyup="PF('tablaServicio').filter()" style="width: 150px;" placeholder="Buscar" />
+                    </p:outputPanel>
+                </f:facet>
+                <p:column headerText="Código de solicitud" filterBy="#{servicio.codigoRegistro}" filterStyle="display:none" filterMatchMode="contains">
+                    <h:outputText value="#{servicio.codigoRegistro}" />
+                </p:column>
+                <p:column headerText="Requerimiento" filterBy="#{servicio.idRequerimiento.descripcion}" filterStyle="display:none" filterMatchMode="contains">
+                    <h:outputText value="#{servicio.idRequerimiento.descripcion}" />
+                </p:column>                                
+                <p:column headerText="Fecha solicitud" sortBy="#{servicio.fechaRegistro}">
+                    <h:outputText value="#{servicio.fechaRegistro}" ><f:convertDateTime pattern="dd/MM/yyyy"/></h:outputText>
+                </p:column>                                
+                <p:column headerText="Respondido" filterBy="#{servicio.estado}" filterStyle="display:none" filterMatchMode="contains">
+                    <h:outputText value="#{servicio.estado}" />
+                </p:column>
+                <p:column headerText="Opciones" >
+                    <p:commandButton update=":form:displayDetalles" oncomplete="PF('dlgDetalles').show()" style=" width: 25px; height: 25px; float: left;" icon="ui-icon-circle-plus" title="Detalles" >
+                        <f:setPropertyActionListener value="#{servicio}" target="#{servicioTecnicoManaged.servicioTecnico}" />
+                    </p:commandButton>
+                </p:column>                                
+            </p:dataTable>
+            <!--//FIN TABLA-->
+        </h:form>
+    </h:body>
+</html>
+

@@ -1,0 +1,101 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:head>
+        <title>Consultar certificados</title>
+    </h:head>
+    <h:body>
+        <h:form id="form"> 
+            <p:growl autoUpdate="true" showDetail="true" showSummary="false" />
+            <p:dataTable id="tabla" var="certificado" value="#{consultarCertificadosManaged.listaCertificados}" widgetVar="tablaCertificado" style="margin-bottom:20px; font-family: calibri; width: 100%;"
+                         emptyMessage="No hay registros" filteredValue="#{consultarCertificadosManaged.filtroCertificados}"                         
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         paginator="true"
+                         rows="10"
+                         selectionMode="single"                              
+                         rowKey="#{certificado.idCertificado}"
+                         rowsPerPageTemplate="10,25,50,100"                         
+                         >
+                <f:facet name="header">
+                    <p:outputPanel style="text-align: right" > 
+                        <p:outputLabel value="Listar por:" for="listarPor" style="float:left; margin-top: 6px;" />
+                        <p:selectOneMenu value="#{consultarCertificadosManaged.filtrarPor}" id="listarPor" style="width:180px; text-align: left; float: left; margin-top: 5px; margin-left: 5px;" >                            
+                            <f:selectItems var="listado" itemLabel="#{listado.estado}" itemValue="#{listado.idEstado}" 
+                                           value="#{consultarCertificadosManaged.listaEstadoCertificado}" />                            
+                            <p:ajax listener="#{consultarCertificadosManaged.listarPor()}" update=":form"  />
+                            <p:ajax onstart="PF('tablaCertificado').filter()" />
+                        </p:selectOneMenu>                                       
+                        <p:inputText id="globalFilter" onkeyup="PF('tablaCertificado').filter()" style="width:150px; " placeholder="Buscar" />
+                    </p:outputPanel>                   
+                </f:facet>
+
+                <p:column headerText="Documento solicitante" sortBy="#{certificado.fechaSolicitud}" filterBy="#{certificado.documentoSolicitante}" filterStyle="display:none"  filterMatchMode="contains">
+                    <h:outputText value="#{certificado.documentoSolicitante}" />
+                </p:column>
+                <p:column headerText="Opciones" >                                                                                    
+                    <p:commandButton id="pago" icon=" ui-icon-plus" title="Realizar pago" style="width: 25px; height: 25px;">
+                        <p:ajax listener="#{consultarCertificadosManaged.consultarAsociado(certificado)}" />
+                        <p:ajax onstart="PF('dlgCrearPago').show()" update=":form:displayCrearPago,:form:botonesCrearPago" />
+                    </p:commandButton>                                            
+                    <p:commandButton id="certificar" icon="ui-icon-document" actionListener="#{consultarCertificadosManaged.generarReporte}" style="width: 25px; height: 25px;" title="Certificar">                       
+                        <p:ajax listener="#{consultarCertificadosManaged.consultarAsociado(certificado)}" />
+                        <p:ajax listener="#{consultarCertificadosManaged.obtnerCedula()}" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>            
+
+            <!--CREAR PAGO-->
+            <p:dialog widgetVar="dlgCrearPago" modal="false" header="Registrar Pago" resizable="false" hideEffect="explode">               
+                <p:panelGrid id="displayCrearPago" columns="2" columnClasses="label,value">
+                    <c:if test="#{consultarCertificadosManaged.idCertificado.idPago == null}">
+                        <p:outputLabel value="No recibo"></p:outputLabel>
+                        <p:inputText id="noReci" value="#{consultarCertificadosManaged.numeroRecibo}"></p:inputText>
+                        <p:outputLabel value="Tipo de pago"></p:outputLabel>
+                        <p:outputLabel value="Certificado"></p:outputLabel>
+                        <p:outputLabel value="Nombre" ></p:outputLabel>
+                        <p:outputLabel value="#{consultarCertificadosManaged.idAsociado.nombre} #{consultarCertificadosManaged.idAsociado.apellido}" id="nombreA" />                    
+                        <p:outputLabel value="Fecha pago"/>
+                        <p:calendar id="date" locale="es"  navigator="true" pattern="yyyy/MM/dd" value="#{consultarCertificadosManaged.fechaPago}"></p:calendar>
+                        <p:outputLabel value="Valor del pago"></p:outputLabel>
+                        <p:inputText id="valor" value="#{consultarCertificadosManaged.valorPago}"  ></p:inputText>
+
+                        <p:outputLabel value="Observaciones"></p:outputLabel>
+                        <p:inputTextarea id="observacion" value="#{consultarCertificadosManaged.observacion}">                        
+                        </p:inputTextarea>
+                    </c:if>
+                    <c:if test="#{consultarCertificadosManaged.idCertificado.idPago != null}">
+                        <p:outputLabel value="No recibo"></p:outputLabel>
+                        <p:outputLabel id="noReci" value="#{consultarCertificadosManaged.idPago.numeroRecibo}"/>
+                        <p:outputLabel value="Tipo de pago"></p:outputLabel>
+                        <p:outputLabel value="Certificado"></p:outputLabel>
+                        <p:outputLabel value="Nombre" ></p:outputLabel>
+                        <p:outputLabel value="#{consultarCertificadosManaged.idAsociado.nombre} #{consultarCertificadosManaged.idAsociado.apellido}" id="nombreA" />
+                        <p:outputLabel value="Fecha pago"/>
+                        <p:outputLabel value="#{consultarCertificadosManaged.idPago.fechaPago}"><f:convertDateTime pattern="dd/MM/yyyy" /></p:outputLabel>
+                        <p:outputLabel value="Valor del pago"></p:outputLabel>
+                        <p:outputLabel id="valor" value="#{consultarCertificadosManaged.idPago.valorPago}"  />
+                        <p:outputLabel value="Observaciones"></p:outputLabel>
+                        <p:outputLabel id="observacion" value="#{consultarCertificadosManaged.idPago.observacion}" />
+                    </c:if>
+                </p:panelGrid>
+                <p:panel id="botonesCrearPago" style="border: 0px; text-align: right;">
+                    <c:if test="#{consultarCertificadosManaged.idCertificado.idPago == null}">
+                        <p:commandButton id="realizarPago" value="Guardar" actionListener="#{consultarCertificadosManaged.registrarPago()}" update=":form">                   
+                        </p:commandButton>
+                    </c:if>
+                    <c:if test="#{consultarCertificadosManaged.idCertificado.idPago != null}">                    
+                        <div style="width: 100%; height: 30px; background-color: #D2FC94; text-align: center; font-family: verdana; font-weight: bold; font-size: 15px; border-radius: 10px 10px;" >
+                            <p:outputLabel value="Pago realizado!." style="margin-top: 4px;"/>
+                        </div>
+                    </c:if>
+                </p:panel>
+            </p:dialog>
+            <!--FIN CREAR PAGO-->
+        </h:form>        
+    </h:body>
+</html>
+

@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui" 
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <f:view contentType="text/html">
+        <h:head>
+            <f:facet name="first">
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+            </f:facet>       
+        </h:head>
+        <h:body>        
+            <h:form id="form">
+                <p:growl id="mensaje2" autoUpdate="true" showSummary="false"  showDetail="true"/>           
+                <p:dataTable id="tabla" var="zona" value="#{zonaManaged.listaZonas}" widgetVar="zonaTable" style="margin-bottom:20px; font-family: calibri; width: 100%;"
+                             emptyMessage="No hay registros" filteredValue="#{zonaManaged.filtroZonas}"                         
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             paginator="true"
+                             rows="10"
+                             selectionMode="single"           
+                             rowKey="#{zona.idZona}"
+                             rowsPerPageTemplate="10,25,50,100"                         
+                             >  
+                    <f:facet name="header">
+                        <p:outputPanel style="text-align: right; font-family: calibri;" >                                      
+                            <p:selectOneRadio id="listarPor"  columns="4" value="#{zonaManaged.listarPor}" style=" width: 300px; float: left;"  >
+                                <f:selectItem itemLabel="Activos" itemValue="Activos" />
+                                <f:selectItem itemLabel="Deshabilitadas" itemValue="Dehabilitados" />                              
+                                <p:ajax listener="#{zonaManaged.listarPreferencia()}" update=":form"  onstart="PF('zonaTable').filter()"/>
+                            </p:selectOneRadio>                    
+                            <div id="estado">  
+                            </div>
+                            <p:commandButton value="Nuevo"  style="  margin-right: 10%;">                                                                       
+                                <p:ajax listener="#{zonaManaged.limpiar()}" update=":form" />                                                                                                    
+                                <p:ajax onstart="PF('dlgCrear').show()" /> 
+                            </p:commandButton>                        
+                            <p:inputText id="globalFilter" onkeyup="PF('zonaTable').filter()" style="width:150px; " placeholder="Buscar" />                        
+                        </p:outputPanel>                   
+                    </f:facet>       
+
+                    <p:column headerText="Capacidad vehiculos" filterBy="#{zona.capacidadVehiculos}" filterStyle="display:none"  filterMatchMode="contains">                    
+                        <h:outputText value="#{zona.capacidadVehiculos}" style="width:180%" />
+                    </p:column>  
+                    <p:column headerText="Nombre" filterBy="#{zona.nombre}" filterStyle="display:none" filterMatchMode="contains">
+                        <h:outputText value="#{zona.nombre}" style="width:180%" />
+                    </p:column>
+                    <p:column headerText="Ubicación" filterBy="#{zona.ubicacion}" filterStyle="display:none"  filterMatchMode="contains">                    
+                        <h:outputText value="#{zona.ubicacion}" style="width:180%" />
+                    </p:column> 
+                    <p:column headerText="Carga" filterBy="#{zona.carga}" filterStyle="display:none"  filterMatchMode="contains">                    
+                        <h:outputText value="#{zona.carga}" style="width:180%" />
+                    </p:column>
+
+                    <p:column headerText="Opciones" style="width:12%;">                                                           
+                        <p:commandButton oncomplete="PF('dlgDetallesZona').show()" icon="ui-icon-circle-plus" style=" width: 25px; height: 25px; float: left;" title="Detalles" update=":form:displayDetallesZona" >
+                            <f:setPropertyActionListener value="#{zona}" target="#{zonaManaged.zonaEditar}" />
+                        </p:commandButton>
+                        <p:commandButton oncomplete="PF('dlgEditarZona').show()" icon="ui-icon-pencil" style=" width: 25px; height: 25px; float: left;" title="Detalles" update=":form:displayEditarZona" >
+                            <f:setPropertyActionListener value="#{zona}" target="#{zonaManaged.zonaEditar}" />
+                        </p:commandButton>
+                        <p:commandButton style=" width: 25px; height: 25px; float: left;" icon="#{zonaManaged.iconoAyD}" title="#{zonaManaged.tituloAyD}" oncomplete="cargarPagina('deshabilitarZona.xhtml')" actionListener="#{principalManagedBean.seleccionarZona(zona)}" >                       
+                        </p:commandButton>
+                    </p:column>   
+                </p:dataTable>
+
+                <!-- CREACIÓN NUEVA ZONA -->
+                <p:dialog widgetVar="dlgCrear" resizable="false" header="Crear Nueva Zona" showEffect="fade" hideEffect="explode"> 
+                    <p:panelGrid id="displayCrear" columns="2" columnClasses="label,value">                                                                                
+                        <p:outputLabel value="Nombre:" for="nombre" />
+                        <p:inputText value="#{zonaManaged.nombreZona}" id="nombre" />
+                        <p:outputLabel value="capacidadZona" for="capacidad"/>
+                        <p:inputText value="#{zonaManaged.capacidadVehiculos}" id="capacidad"/>
+                        <p:outputLabel value="Ubicación:" for="ubicacion" />
+                        <p:inputText value="#{zonaManaged.ubicacion}" id="ubicacion" />
+                        <p:outputLabel value="Carga:" for="carga" />
+                        <p:inputText value="#{zonaManaged.carga}" id="carga" />
+                    </p:panelGrid>
+                    <p:panel  style="border:0px;">
+                        <p:commandButton value="Limpiar" actionListener="#{zonaManaged.limpiar()}" oncomplete="PF('dlgCrear').show()" update=":form:displayCrear" style="font-size: 16px;"/>
+                        <p:commandButton value="Cancelar" actionListener="#{zonaManaged.limpiar()}" onclick="PF('dlgCrear').hide()" update=":form" style="font-size: 16px;"/>
+                        <p:commandButton value="Guardar" action="#{zonaManaged.insertar()}" oncomplete="PF('dlg]Crear').hide()" update=":form" icon="ui-icon-disk" style="font-size: 16px;" />                     
+                    </p:panel>
+                </p:dialog> 
+                <!-- FIN CREACIÓN NUEVA ZONA   -->
+
+                <!--Editar Zona-->
+                <p:dialog widgetVar="dlgEditarZona" resizable="false" header="Crear Nueva Zona" showEffect="fade" hideEffect="explode"> 
+                    <p:panelGrid id="displayEditarZona" columns="2" columnClasses="label,value" >                                                                                
+                        <p:outputLabel value="Nombre:" for="nombre2" />
+                        <p:inputText value="#{zonaManaged.zonaEditar.nombre}" id="nombre2" />
+                        <p:outputLabel value="capacidadZona" for="capacidad2"/>
+                        <p:inputText value="#{zonaManaged.zonaEditar.capacidadVehiculos}" id="capacidad2"/>
+                        <p:outputLabel value="Ubicación:" for="ubicacion2" />
+                        <p:inputText value="#{zonaManaged.zonaEditar.ubicacion}" id="ubicacion2" />
+                        <p:outputLabel value="Carga:" for="carga2" />
+                        <p:inputText value="#{zonaManaged.zonaEditar.carga}" id="carga2" />
+                    </p:panelGrid>
+                    <p:panel  style="border:0px;">
+                        <p:commandButton value="Limpiar" actionListener="#{zonaManaged.limpiar()}" oncomplete="PF('dlgEditarZona').show()" update=":form:displayEditarZona" style="font-size: 16px;"/>
+                        <p:commandButton value="Cancelar" actionListener="#{zonaManaged.limpiar()}" onclick="PF('dlgEditarZona').hide()" update=":form" style="font-size: 16px;"/>
+                        <p:commandButton value="Guardar" action="#{zonaManaged.editar()}" oncomplete="PF('dlgEditarZona').hide()" update=":form" icon="ui-icon-disk" style="font-size: 16px;" />                     
+                    </p:panel>
+                </p:dialog> 
+                <!--Fin Editar Zona-->
+
+                <!--Detalles Zona-->
+                <p:dialog widgetVar="dlgDetallesZona" resizable="false" header="Detalles Zona" showEffect="fade" hideEffect="explode"> 
+                    <p:panelGrid id="displayDetallesZona" columns="2" columnClasses="label,value" >
+                        <p:outputLabel value="Nombre:" for="nombre3" />
+                        <p:outputLabel value="#{zonaManaged.zonaEditar.nombre}" id="nombre3" />
+                        <p:outputLabel value="capacidadZona" for="capacidad3"/>
+                        <p:outputLabel value="#{zonaManaged.zonaEditar.capacidadVehiculos}" id="capacidad3"/>
+                        <p:outputLabel value="Ubicación:" for="ubicacion3" />
+                        <p:outputLabel value="#{zonaManaged.zonaEditar.ubicacion}" id="ubicacion3" />
+                        <p:outputLabel value="Carga:" for="carga2" />
+                        <p:outputLabel value="#{zonaManaged.zonaEditar.carga}" id="carga3" />
+                    </p:panelGrid>
+                    <p:panel  style="border:0px;">                        
+                        <p:commandButton value="Volver Atrás" actionListener="#{zonaManaged.limpiar()}" onclick="PF('dlgDetallesZona').hide()" update=":form" style="font-size: 16px;"/>                        
+                    </p:panel>
+                </p:dialog> 
+                <!--Fin Detalles Zona-->
+            </h:form>
+        </h:body>
+    </f:view>
+</html>

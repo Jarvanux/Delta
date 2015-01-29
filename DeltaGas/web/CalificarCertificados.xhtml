@@ -1,0 +1,158 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:head>
+        <title>Calificar certificados</title>
+    </h:head>
+    <h:body>
+        <h:form id="form"> 
+            <p:growl autoUpdate="true" showDetail="true" showSummary="false" />
+            <p:dataTable id="tabla" var="certificado" value="#{calificarCertificadoManaged.listaSolicitudes}" widgetVar="tablaSolicitudes" style="margin-bottom:20px; font-family: calibri; width: 100%;"
+                         emptyMessage="No hay registros" filteredValue="#{consultarCertificadosManaged.filtroCertificados}"                         
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         paginator="true"
+                         rows="10"
+                         selectionMode="single"                              
+                         rowKey="#{certificado.idCertificado}"
+                         rowsPerPageTemplate="10,25,50,100"                         
+                         >                
+                <p:column headerText="Documento solicitante" sortBy="#{certificado.fechaSolicitud}" filterBy="#{certificado.documentoSolicitante}" filterStyle="display:none"  filterMatchMode="contains">
+                    <h:outputText value="#{certificado.documentoSolicitante}" />
+                </p:column>
+                <p:column headerText="Opciones" >                                                                                    
+                    <p:commandButton icon="ui-icon-shearch" style="width: 25px; height: 25px;" title="Analizar progreso">                    
+                        <p:ajax listener="#{calificarCertificadoManaged.analizarProgreso(certificado)}" />
+                        <p:ajax onstart="PF('dlgProgreso').show()" update=":form:displayProgreso" />                       
+                    </p:commandButton>
+                    <p:commandButton icon="ui-icon-check" style="width: 25px; height: 25px;" title="Aprobar" actionListener="#{calificarCertificadoManaged.aprobar(certificado)}"/>
+                    <p:commandButton icon="ui-icon-close" title="Rechazar" style="width: 25px; height: 25px;" actionListener="#{calificarCertificadoManaged.rechazar(certificado)}"/>
+                </p:column>
+            </p:dataTable>            
+
+            <!--VER PROGRESO-->
+            <p:dialog widgetVar="dlgProgreso" header="Progreso" hideEffect="explode">
+                <p:panelGrid id="displayProgreso" columns="2" columnClasses="label,value" style="margin: 0 auto;">
+                    <p:outputLabel value="Solicitante:" title="Asociado que realizó la solicitud."></p:outputLabel>
+                    <p:outputLabel value="#{calificarCertificadoManaged.idAsociado.cedula}" />
+                    <p:outputLabel value="Nombre:" title="Asociado que realizó la solicitud." />
+                    <p:outputLabel value="#{calificarCertificadoManaged.idAsociado.nombre} #{calificarCertificadoManaged.idAsociado.apellido}" id="nombreA" />                        
+                    <p:outputLabel value="Mediador:" title="Empleado que registró la solicitud." />
+                    <p:outputLabel value="#{calificarCertificadoManaged.idEmpleado.nombre} #{calificarCertificadoManaged.idEmpleado.apellido}" title="Empleado que registró la solicitud."/>
+                </p:panelGrid>                
+                <p:panel id="botones" style="border: 0px; text-align: right;">
+                    <p:commandButton value="Pagos ETOC" >
+                        <p:ajax listener="#{calificarCertificadoManaged.listarPreviamente()}" />
+                        <p:ajax onstart="PF('dlgPagosEtoc').show()" update=":form:displayPagosEtoc" />
+                    </p:commandButton>
+                    <p:commandButton value="Pagos Convenios" onclick="PF('dlgPagosConvenios').show()" update=":form:datosAsociado"/>
+                </p:panel>
+            </p:dialog>
+            <!--FIN VER PROGRESO-->
+
+            <!--PAGOs ETOC-->
+            <p:dialog widgetVar="dlgPagosEtoc" header="Pagos generales del asociado" hideEffect="explode">
+                <p:panel id="displayPagosEtoc" >
+                    <p:dataTable id="tabla2" var="pago" value="#{calificarCertificadoManaged.listaPagos}" widgetVar="pagoTable" style="font-family: calibri; width: 100%;"                         
+                                 emptyMessage="No hay registros" 
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 paginator="true"
+                                 selectionMode="single"           
+                                 rowKey="#{pago.numeroRecibo}"
+                                 rows="10"                                 
+                                 >
+                        <f:facet name="header">
+                            <p:outputPanel style="text-align: right" > 
+                                <p:outputLabel value="Tipo de pago:" for="tipoPago1" style="float:left; margin-top: 6px;" />
+                                <p:selectOneMenu value="#{calificarCertificadoManaged.listarPor}" id="tipoPago1" style="width:180px; text-align: left; float: left; margin-top: 5px; margin-left: 5px;" >
+                                    <f:selectItem  itemLabel="Todos" itemValue="-1"/>
+                                    <f:selectItems var="tipoPago1" itemLabel="#{tipoPago1.nombrePago}" itemValue="#{tipoPago1.idTipoPago}" 
+                                                   value="#{tipoPagoManaged.listaTipoPagoTabla}" />                            
+                                    <p:ajax listener="#{calificarCertificadoManaged.listarPor()}" update=":form:displayPagosEtoc"  />
+                                    <p:ajax onstart="PF('pagoTable').filter()" />
+                                </p:selectOneMenu>                                                                                
+                            </p:outputPanel>                   
+                        </f:facet>
+
+                        <p:column headerText="Tipo de pago" sortBy="#{pago.idTipoPago.nombrePago}" filterBy="#{pago.idTipoPago.nombrePago}" filterStyle="display:none"  filterMatchMode="contains">                    
+                            <h:outputText value="#{pago.idTipoPago.nombrePago}" />
+                        </p:column>
+                        <p:column headerText="Número de recibo" sortBy="#{pago.numeroRecibo}" filterBy="#{pago.numeroRecibo}" filterStyle="display:none"  filterMatchMode="contains">                
+                            <h:outputText value="#{pago.numeroRecibo}" />
+                        </p:column>                
+                        <p:column headerText="Cedula" filterBy="#{pago.idAsociado.cedula}" filterStyle="display:none"  filterMatchMode="contains">                    
+                            <h:outputText value="#{pago.idAsociado.cedula}" />
+                        </p:column>                
+                        <p:column headerText="Asociado" sortBy="#{pago.idAsociado.nombre} #{pago.idAsociado.apellido}" filterBy="#{pago.idAsociado.nombre} #{pago.idAsociado.apellido}" filterStyle="display:none"  filterMatchMode="contains">                
+                            <h:outputText value="#{pago.idAsociado.nombre} #{pago.idAsociado.apellido}" />
+                        </p:column>                                
+                        <p:column headerText="Fecha del pago" sortBy="#{pago.fechaPago}" filterBy="#{pago.fechaPago}" filterStyle="display:none"  filterMatchMode="contains">                
+                            <h:outputText value="#{pago.fechaPago}" style="width:100%" ><f:convertDateTime pattern="dd/MM/yyyy" /></h:outputText>
+                        </p:column>                                                 
+                    </p:dataTable>   
+                </p:panel>
+            </p:dialog>
+            <!--FIN PAGOs ETOC-->
+
+            <!--PAGOS CONVENIOS-->
+            <p:dialog widgetVar="dlgPagosConvenios" header="Pagos de convenio del asociado" hideEffect="explode">
+                <p:outputLabel value="No es posible traer los pagos exactos del asociado, debes filtrar con los datos mostrados a continuación:" style="width: 340px;"/>
+                <p:panelGrid id="datosAsociado" columnClasses="label,value" columns="2" style="margin-top: 20px;">
+                    <p:outputLabel value="Nombre del Asociado: "/>
+                    <p:outputLabel value="#{calificarCertificadoManaged.idAsociado.nombre} #{calificarCertificadoManaged.idAsociado.apellido}" />
+                    <p:outputLabel value="Cédula:" />
+                    <p:outputLabel value="#{calificarCertificadoManaged.idAsociado.cedula}" />
+                </p:panelGrid>
+
+                <p:panel id="displayPagosConvenio" style="overflow: auto; max-height: 400px; width: 700px;">
+                    <p:dataTable id="tablac" var="pagoc" value="#{pagoManaged1.listaPagoConvenios}" widgetVar="pagoTablec" style="font-family: calibri; width: 100%;"
+                                 emptyMessage="No hay registros" filteredValue="#{pagoManaged1.filtroPagoConvenios}"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 paginator="true"
+                                 rows="10"
+                                 selectionMode="single"                              
+                                 rowKey="#{pagoc.numeroConsig}"
+                                 rowsPerPageTemplate="10,25,50,100"                         
+                                 >
+                        <f:facet name="header">               
+                            <p:outputPanel style="text-align: right" > 
+                                <p:outputLabel value="Convenio:" for="cbxConvenio" style="float:left; margin-top: 6px;" />
+                                <p:selectOneMenu value="#{pagoManaged1.listarPor}" id="cbxConvenio" style="width:180px; text-align: left; float: left; margin-top: 5px; margin-left: 5px;" >
+                                    <f:selectItem  itemLabel="Todos" itemValue="-1"/>
+                                    <f:selectItems var="convenio" itemLabel="#{convenio.nombreConvenio}" itemValue="#{convenio.idConvenio}" 
+                                                   value="#{convenioManaged.listaConvenio}" />                            
+                                    <p:ajax listener="#{pagoManaged1.listarPor()}" update=":form:displayPagosConvenio"  />
+                                    <p:ajax onstart="PF('pagoTablec').filter()" />
+                                </p:selectOneMenu>                
+                                <p:inputText id="globalFilter" onkeyup="PF('pagoTablec').filter()" style="width:150px; " placeholder="Buscar" />
+                                <p:commandButton icon="#{pagoManaged1.iconoBotonSubFiltros}" title="#{pagoManaged1.tituloBotonActivarSubFiltros}" actionListener="#{pagoManaged1.controlarSubFiltros()}" style="width: 25px; height: 25px;" update=":form:displayPagosConvenio"/>
+                            </p:outputPanel>                   
+                        </f:facet>
+
+                        <p:column headerText="Número de consignación"  filterBy="#{pagoc.numeroConsig}" filterStyle="display:#{pagoManaged1.visibilidaSubFiltros}"  filterMatchMode="contains">                    
+                            <h:outputText value="#{pagoc.numeroConsig}" />
+                        </p:column>
+                        <p:column headerText="Cédula" filterBy="#{pagoc.idVehiculo.idAsociado.cedula}" filterStyle="display:none"  filterMatchMode="contains">                    
+                            <h:outputText value="#{pagoc.idVehiculo.idAsociado.cedula}" />
+                        </p:column>                                                
+                        <p:column headerText="Convenio" sortBy="#{pagoc.idConvenio.nombreConvenio}" filterBy="#{pagoc.idConvenio.nombreConvenio}"  filterStyle="display:#{pagoManaged1.visibilidaSubFiltros}" filterMatchMode="contains">                    
+                            <h:outputText value="#{pagoc.idConvenio.nombreConvenio}" />
+                        </p:column>
+
+                        <p:column headerText="Placa del Vehículo" sortBy="#{pagoc.idVehiculo.placa}" filterBy="#{pagoc.idVehiculo.placa}" filterStyle="display:#{pagoManaged1.visibilidaSubFiltros}" filterMatchMode="contains">                    
+                            <h:outputText value="#{pagoc.idVehiculo.placa}" />
+                        </p:column>
+                        <p:column headerText="Fecha consignación" sortBy="#{pagoc.fechaConsignacion}" filterBy="#{pagoc.fechaConsignacion}" filterStyle="display:none" filterMatchMode="contains">                    
+                            <h:outputText value="#{pagoc.fechaConsignacion}" ><f:convertDateTime pattern="YYYY/MM/dd" /></h:outputText>
+                        </p:column>
+                    </p:dataTable>   
+                </p:panel>
+            </p:dialog>
+            <!--FIN PAGOS CONVENIOS-->
+        </h:form>        
+    </h:body>
+</html>
+

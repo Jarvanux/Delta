@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title></title>
+    </h:head>
+    <h:body>        
+        <h:form id="form">
+            <p:growl  id="sms"/>
+            <p:dialog widgetVar="cargando" modal="true" resizable="false" header="Cargando..." showEffect="fade" closable="false">
+                <p:graphicImage id="img" value="../imagenes/loading.gif" style="width: 100px; height: 100px;" />
+            </p:dialog>             
+
+            <p:dialog id="dlgEliminarID" widgetVar="dlgEliminar" modal="true" resizable="false" header="Confirmación" showEffect="fade" hideEffect="explode">
+                <div style="width: 300px; text-align: center; border: 0px;">
+                    <div style="width: 300px; text-align: center; border: 0px;">
+                        <p:outputLabel id="mensaje" value="El registro se eliminará temporalmente del sistema, está seguro?" />
+                    </div>
+                    <br></br>
+                    <p:commandButton value="Si"  action="#{almacenManaged.eliminar()}" icon="ui-icon-check" update=":form" />
+                    <p:commandButton value="No" onclick="PF('dlgEliminar').hide()" icon="ui-icon-close" />
+                </div>
+            </p:dialog>
+            
+            <!-- Detalles del producto -->
+            <p:dialog widgetVar="dlgDetalles" modal="false" resizable="false" header="Detalles de producto" showEffect="fade"> 
+                <p:panelGrid id="displayDetalles" columnClasses="label,label" columns="2">
+                    <p:outputLabel value="Código del producto:" />
+                    <p:outputLabel value="#{almacenManaged.producto.codigo}" />
+                    <p:outputLabel value="Nit Proveedor:" />
+                    <p:outputLabel value="#{almacenManaged.producto.idProveedor.documento}" />
+                    <p:outputLabel value="Proveedor:" />
+                    <p:outputLabel value="#{almacenManaged.producto.idProveedor.nombres} #{almacenManaged.producto.idProveedor.apellidos}" />
+                    <p:outputLabel value="Nombre:" />
+                    <p:outputLabel value="#{almacenManaged.producto.nombre}" />
+                    <p:outputLabel value="Descripción:" />
+                    <p:inputTextarea id="descripcion" value="#{almacenManaged.producto.descripcion}" style="width: 95%; max-width: 300px; max-height: 200px;" rows="3" autoResize="false" placeholder="Descripción del problema." />
+                    <p:outputLabel value="Cantidad:" />
+                    <p:outputLabel value="#{almacenManaged.producto.cantidad}" />
+                    <p:outputLabel value="Valor interno:" />
+                    <p:outputLabel value="#{almacenManaged.producto.valorInterno}" />
+                    <p:outputLabel value="Valor cliente:" />
+                    <p:outputLabel value="#{almacenManaged.producto.valorCliente}" />
+                </p:panelGrid>
+                <div id="botones" style="margin:0 auto; width: 95%; text-align: right;">
+                    <p:commandButton value="Ok" onclick="PF('').hide()"/>
+                </div>
+            </p:dialog> 
+            <!-- Fin detalles del producto --> 
+
+            <!--INICIO TABLA-->
+            <p:dataTable id="tabla" var="almacen" value="#{almacenManaged.lista}"
+                         widgetVar="tablaAlmacen"
+                         emptyMessage="No hay registros" filteredValue="#{almacenManaged.listaFiltro}"
+                         style="font-family: sans-serif; width: 100%;"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         paginator="true"
+                         rows='10'
+                         selectionMode="single"
+                         rowKey="#{almacen.idProducto}"
+                         rowsPerPageTemplate="10,20,30,40,50,60,70,80,90,100"
+                         >
+                <f:facet name="header">
+                    <p:outputPanel style="text-align: right">                        
+                        <p:inputText id="globalFilter" onkeyup="PF('tablaAlmacen').filter()" style="width: 150px;" placeholder="Buscar" />                        
+                    </p:outputPanel>
+                </f:facet>                
+                <p:column headerText="Código de producto" filterBy="#{almacen.codigo}" filterStyle="display:none" filterMatchMode="contains">
+                    <h:outputText value="#{almacen.codigo}" />
+                </p:column>
+                <p:column headerText="Nombre" filterBy="#{almacen.nombre}" filterStyle="display:none" filterMatchMode="contains">
+                    <h:outputText value="#{almacen.nombre}" />
+                </p:column>                                
+                <p:column headerText="Descripción" filterBy="#{almacen.descripcion}" filterStyle="display:none" filterMatchMode="contains">
+                    <h:outputText value="#{almacen.descripcion}" ></h:outputText>
+                </p:column>                                
+                <p:column headerText="Cantidad" filterBy="#{almacen.cantidad}" filterStyle="display:none" filterMatchMode="contains">
+                    <h:outputText value="#{almacen.cantidad}" />
+                </p:column>
+                <p:column headerText="Costo" >
+                    <p:outputLabel value="#{almacen.valorInterno}" />
+                </p:column>
+                <p:column headerText="Valor de venta">
+                    <p:outputLabel value="#{almacen.valorCliente}"/>
+                </p:column>
+                <p:column headerText="Fechas ingreso" >
+                    <p:outputLabel value="#{almacen.fechaAgregado}" ><f:convertDateTime pattern="dd/MM/yyyy" /></p:outputLabel>
+                </p:column>
+                <p:column headerText="Opcciones" >                    
+                    <p:commandButton style=" width: 25px; height: 25px; float: left;" icon="ui-icon-circle-plus" title="Detalles" >
+                        <p:ajax listener="#{almacenManaged.detalles(almacen)}" />
+                        <p:ajax update=":form:displayDetalles" />
+                        <p:ajax oncomplete="PF('dlgDetalles').show()" />
+                    </p:commandButton>
+                    <p:commandButton style=" width: 25px; height: 25px; float: left;" icon="ui-icon-close" title="Eliminar" >
+                        <f:setPropertyActionListener value="#{almacen}" target="#{almacenManaged.producto}" />
+                        <p:ajax listener="#{almacenManaged.eliminar(almacen)}" />
+                        <p:ajax onstart="PF('dlgEliminar').show()" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+            <!--FIN TABLA-->
+        </h:form>
+    </h:body>
+</html>
